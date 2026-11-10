@@ -1,0 +1,3613 @@
+<!DOCTYPE html>
+<html lang="ja">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Grammar Master Pro — AI英語学習＆発音・会話</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;600;700;800&family=Plus+Jakarta+Sans:wght@500;700;800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --bg-body: #eef4fb;
+            --card-white: #ffffff;
+            --text-main: #0f172a;
+            --text-sub: #475569;
+            --text-muted: #94a3b8;
+            --primary: #2589f5;
+            --primary-dark: #1565c0;
+            --primary-soft: #e8f3ff;
+            --success: #16a34a;
+            --success-soft: #dcfce7;
+            --warning: #eab308;
+            --warning-soft: #fef9c3;
+            --danger: #ef4444;
+            --danger-soft: #fee2e2;
+            --border-soft: #e2e8f0;
+            --shadow-card: 0 10px 30px rgba(15, 23, 42, 0.06), 0 2px 6px rgba(15, 23, 42, 0.03);
+            --shadow-float: 0 14px 28px rgba(37, 137, 245, 0.22);
+            --radius-xl: 28px;
+            --radius-lg: 20px;
+            --radius-md: 14px;
+        }
+
+        * { box-sizing: border-box; }
+
+        body {
+            font-family: 'Plus Jakarta Sans', 'Inter', -apple-system, BlinkMacSystemFont, "Hiragino Sans", "Yu Gothic UI", sans-serif;
+            background: var(--bg-body);
+            color: var(--text-main);
+            margin: 0;
+            padding: 0;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.6;
+            transition: background 0.4s ease;
+        }
+
+        /* ページごとの清潔で明るい背景カラー */
+        body[data-page="home"]     { background: linear-gradient(180deg, #d7ecff 0%, #f4f8fd 45%, #ffffff 100%); }
+        body[data-page="drill"]    { background: linear-gradient(180deg, #fff6d6 0%, #f8fafc 45%, #ffffff 100%); }
+        body[data-page="coach"]    { background: linear-gradient(180deg, #ffe4f1 0%, #f9f6fc 45%, #ffffff 100%); }
+        body[data-page="roleplay"] { background: linear-gradient(180deg, #d8f3e5 0%, #f0f7f4 45%, #ffffff 100%); }
+        body[data-page="progress"] { background: linear-gradient(180deg, #e0eaff 0%, #f5f8ff 45%, #ffffff 100%); }
+
+        /* アプリ外枠（スマホ〜PCまで見やすいクリーンな白ベースカード） */
+        .app-shell {
+            width: 100%;
+            max-width: 520px;
+            min-height: 100vh;
+            background: #ffffff;
+            box-shadow: 0 20px 60px rgba(15, 23, 42, 0.08);
+            display: flex;
+            flex-direction: column;
+            position: relative;
+            padding-bottom: 92px;
+            overflow-x: hidden;
+        }
+
+        @media (min-width: 560px) {
+            body { padding: 20px 0 30px; }
+            .app-shell {
+                min-height: 840px;
+                border-radius: 36px;
+                border: 6px solid #ffffff;
+            }
+        }
+
+        /* 上部バー */
+        .topbar {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 16px 20px 10px;
+            z-index: 20;
+        }
+        .brand-pill {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            background: rgba(255, 255, 255, 0.9);
+            padding: 6px 14px;
+            border-radius: 999px;
+            font-weight: 800;
+            font-size: 15px;
+            color: var(--text-main);
+            box-shadow: 0 2px 10px rgba(15, 23, 42, 0.06);
+        }
+        .brand-pill .flag { font-size: 17px; }
+        .topbar-actions {
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+        .icon-circle-btn {
+            width: 38px;
+            height: 38px;
+            border-radius: 50%;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            background: rgba(255, 255, 255, 0.92);
+            color: var(--text-main);
+            font-size: 16px;
+            cursor: pointer;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 2px 8px rgba(15, 23, 42, 0.05);
+        }
+        .icon-circle-btn:hover {
+            transform: translateY(-1px);
+            background: #ffffff;
+            color: var(--primary);
+        }
+
+        /* 目次ドロワーメニュー */
+        .toc-menu {
+            display: none;
+            background: #ffffff;
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            position: absolute;
+            width: calc(100% - 32px);
+            left: 16px;
+            top: 66px;
+            box-shadow: 0 20px 50px rgba(15, 23, 42, 0.18);
+            z-index: 150;
+            max-height: 68vh;
+            overflow-y: auto;
+        }
+        .toc-menu.active { display: block; animation: popDown 0.2s ease-out; }
+        @keyframes popDown {
+            from { opacity: 0; transform: translateY(-8px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        .toc-chapter {
+            padding: 12px 18px;
+            background: #f1f5f9;
+            font-weight: 800;
+            font-size: 13px;
+            color: #334155;
+            border-bottom: 1px solid var(--border-soft);
+            position: sticky;
+            top: 0;
+        }
+        .toc-section {
+            padding: 12px 18px 12px 26px;
+            font-size: 14px;
+            font-weight: 600;
+            cursor: pointer;
+            border-bottom: 1px solid #f1f5f9;
+            color: var(--text-main);
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            transition: background 0.15s;
+        }
+        .toc-section:hover { background: var(--primary-soft); color: var(--primary-dark); }
+        .toc-section.current { background: var(--primary-soft); color: var(--primary); font-weight: 800; }
+
+        /* ページ切り替えアニメーション */
+        .app-page {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            animation: pageFade 0.28s ease-out;
+        }
+        .app-page.active { display: flex; }
+        @keyframes pageFade {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        /* ==========================================================================
+           Inko風 ふわふわ浮遊キャラクターステージ (各ページ共通＆ページ別カラー)
+           ========================================================================== */
+        .hero-stage {
+            position: relative;
+            padding: 34px 20px 22px;
+            text-align: center;
+            border-bottom-left-radius: 36px;
+            border-bottom-right-radius: 36px;
+            margin-bottom: 14px;
+            overflow: visible;
+        }
+        .hero-stage.stage-home {
+            background: radial-gradient(circle at 50% 25%, #ffffff 0%, #d4ebff 65%, #eef7ff 100%);
+        }
+        .hero-stage.stage-drill {
+            background: radial-gradient(circle at 50% 25%, #ffffff 0%, #fff1be 68%, #fffdf5 100%);
+        }
+        .hero-stage.stage-coach {
+            background: radial-gradient(circle at 50% 25%, #ffffff 0%, #ffd9ec 68%, #fff7fb 100%);
+        }
+        .hero-stage.stage-progress {
+            background: radial-gradient(circle at 50% 25%, #ffffff 0%, #dce8ff 68%, #f7faff 100%);
+        }
+
+        /* キャラクター浮遊＆左右スイング回転＆呼吸アニメーション */
+        .mascot-float-wrap {
+            position: relative;
+            display: inline-flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            margin: 14px auto 8px;
+            cursor: pointer;
+            user-select: none;
+        }
+        .mascot-figure {
+            animation: floatBob 3.2s ease-in-out infinite;
+            transform-origin: center center;
+            position: relative;
+            z-index: 2;
+            transition: transform 0.25s ease;
+        }
+        .mascot-float-wrap:hover .mascot-figure {
+            transform: scale(1.06);
+        }
+        .mascot-img {
+            width: 138px;
+            height: 138px;
+            object-fit: contain;
+            filter: drop-shadow(0 12px 18px rgba(37, 137, 245, 0.18));
+            transform-origin: center center;
+            animation: mascotRockAndBreathe 3.8s ease-in-out infinite;
+        }
+        .mascot-shadow {
+            width: 82px;
+            height: 14px;
+            background: radial-gradient(ellipse at center, rgba(37, 137, 245, 0.28) 0%, rgba(37, 137, 245, 0) 75%);
+            border-radius: 50%;
+            margin-top: 6px;
+            animation: shadowPulse 3.2s ease-in-out infinite;
+        }
+
+        /* 上下のふわふわ浮遊＋上下の速さに完全に同調した自然な伸縮（ソフトなテニスボール感） */
+        @keyframes floatBob {
+            0%, 100% { transform: translateY(3px) scale(1.045, 0.955); }
+            50%      { transform: translateY(-9px) scale(0.965, 1.035); }
+        }
+        /* 左右交互にゆらゆら傾く回転運動（-13度 ⇄ +13度） */
+        @keyframes mascotRockAndBreathe {
+            0%, 100% { transform: rotate(-13deg); }
+            50%      { transform: rotate(13deg); }
+        }
+        @keyframes shadowPulse {
+            0%, 100% { transform: scale(1); opacity: 0.75; }
+            50% { transform: scale(0.72); opacity: 0.35; }
+        }
+        /* キャラ切り替え時・タップ時の元気なテニスボール風バウンス登場 */
+        @keyframes happyJump {
+            0%   { transform: translateY(4px) scale(1.12, 0.88); }
+            30%  { transform: translateY(-20px) scale(0.93, 1.07); }
+            55%  { transform: translateY(2px) scale(1.07, 0.93); }
+            80%  { transform: translateY(-8px) scale(0.97, 1.03); }
+            100% { transform: translateY(3px) scale(1.045, 0.955); }
+        }
+        .mascot-happy {
+            animation: happyJump 0.75s ease-in-out 2 !important;
+        }
+
+        /* ==========================================================================
+           Inko風 3Dぷるぷるゼリーキャラ (瞬き・口パク・色・小物着せ替え対応)
+           ========================================================================== */
+        .inko-blob {
+            width: 136px;
+            height: 112px;
+            border-radius: 48% 52% 46% 54% / 54% 48% 52% 46%;
+            position: relative;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow:
+                inset -10px -14px 24px rgba(0, 0, 0, 0.12),
+                inset 12px 14px 24px rgba(255, 255, 255, 0.75),
+                0 14px 28px rgba(37, 137, 245, 0.22);
+            animation: blobMorph 5s ease-in-out infinite;
+            transition: background 0.3s ease;
+        }
+        .inko-blob::before {
+            content: "";
+            position: absolute;
+            top: 14px;
+            left: 24px;
+            width: 34px;
+            height: 16px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.65);
+            transform: rotate(-18deg);
+            pointer-events: none;
+        }
+        /* 猫耳オプション */
+        .inko-blob.shape-ears::after {
+            content: "";
+            position: absolute;
+            top: -8px;
+            width: 84px;
+            height: 24px;
+            background: inherit;
+            clip-path: polygon(0% 100%, 18% 0%, 36% 100%, 64% 100%, 82% 0%, 100% 100%);
+            z-index: -1;
+        }
+        @keyframes blobMorph {
+            0%, 100% { border-radius: 48% 52% 46% 54% / 54% 48% 52% 46%; }
+            33% { border-radius: 53% 47% 52% 48% / 48% 54% 46% 52%; }
+            66% { border-radius: 45% 55% 49% 51% / 52% 46% 54% 48%; }
+        }
+        .blob-eyes {
+            display: flex;
+            gap: 20px;
+            margin-top: 6px;
+            z-index: 3;
+            position: relative;
+            align-items: center;
+            justify-content: center;
+        }
+        .blob-eye {
+            width: 14px;
+            height: 22px;
+            background: #0f172a;
+            border-radius: 999px;
+            position: relative;
+            animation: eyeBlink 4.5s infinite;
+            transform-origin: center;
+        }
+        .blob-eye::after {
+            content: "";
+            position: absolute;
+            top: 4px;
+            left: 3px;
+            width: 5px;
+            height: 6px;
+            background: #ffffff;
+            border-radius: 50%;
+        }
+        @keyframes eyeBlink {
+            0%, 92%, 100% { transform: scaleY(1); }
+            95% { transform: scaleY(0.08); }
+        }
+        .blob-mouth {
+            width: 16px;
+            height: 8px;
+            border-bottom: 3.5px solid #0f172a;
+            border-radius: 0 0 16px 16px;
+            margin-top: 6px;
+            transition: all 0.2s;
+            z-index: 3;
+        }
+        .inko-blob.speaking .blob-mouth {
+            height: 13px;
+            width: 14px;
+            background: #0f172a;
+            border-radius: 50%;
+            animation: mouthTalk 0.28s infinite alternate;
+        }
+        @keyframes mouthTalk {
+            from { transform: scaleY(0.4); }
+            to { transform: scaleY(1.15); }
+        }
+        /* 頭の上に乗る大きめ3Dアクセサリー（帽子・王冠・リボン） */
+        .blob-accessory-head {
+            position: absolute;
+            top: -30px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 88px;
+            height: 52px;
+            z-index: 6;
+            pointer-events: none;
+            filter: drop-shadow(0 5px 8px rgba(15, 23, 42, 0.18));
+            display: flex;
+            align-items: flex-end;
+            justify-content: center;
+        }
+        /* 目の位置に100%ピッタリ重なるメガネ・サングラス */
+        .blob-accessory-eyes {
+            position: absolute;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            width: 102px;
+            height: 40px;
+            z-index: 6;
+            pointer-events: none;
+            filter: drop-shadow(0 4px 6px rgba(15, 23, 42, 0.22));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        /* キャラクターの吹き出し (Inkoホーム画面風) */
+        .speech-bubble {
+            background: #ffffff;
+            border: 1px solid rgba(15, 23, 42, 0.08);
+            border-radius: 18px;
+            padding: 12px 18px;
+            max-width: 90%;
+            margin: 6px auto 0;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+            box-shadow: 0 6px 20px rgba(15, 23, 42, 0.05);
+            position: relative;
+        }
+        .speech-bubble::before {
+            content: "";
+            position: absolute;
+            top: -7px;
+            left: 50%;
+            transform: translateX(-50%) rotate(45deg);
+            width: 14px;
+            height: 14px;
+            background: #ffffff;
+            border-left: 1px solid rgba(15, 23, 42, 0.08);
+            border-top: 1px solid rgba(15, 23, 42, 0.08);
+        }
+
+        /* 共通コンテンツラッパー */
+        .page-body {
+            padding: 0 18px 20px;
+            display: flex;
+            flex-direction: column;
+            gap: 14px;
+        }
+
+        /* クリーンな白カード */
+        .clean-card {
+            background: #ffffff;
+            border: 1px solid var(--border-soft);
+            border-radius: var(--radius-lg);
+            padding: 18px;
+            box-shadow: var(--shadow-card);
+        }
+
+        /* 現在学習中のレッスン選択バー */
+        .lesson-selector-card {
+            background: #ffffff;
+            border: 1.5px solid #dbeafe;
+            border-radius: 20px;
+            padding: 14px 16px;
+            box-shadow: var(--shadow-card);
+        }
+        .lesson-badge-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 6px;
+        }
+        .chapter-badge {
+            font-size: 11px;
+            font-weight: 800;
+            color: var(--primary);
+            background: var(--primary-soft);
+            padding: 3px 10px;
+            border-radius: 999px;
+        }
+        .section-title-main {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--text-main);
+            margin: 4px 0 10px;
+        }
+        .sentence-preview-box {
+            background: #f8fafc;
+            border-radius: 14px;
+            padding: 12px 14px;
+            border: 1px solid #e2e8f0;
+            margin-bottom: 12px;
+        }
+        .sentence-preview-en {
+            font-size: 17px;
+            font-weight: 800;
+            color: var(--text-main);
+            line-height: 1.4;
+        }
+        .sentence-preview-ja {
+            font-size: 13px;
+            color: var(--text-sub);
+            margin-top: 4px;
+        }
+        .mini-nav-row {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            gap: 8px;
+        }
+        .pill-nav-btn {
+            background: #f1f5f9;
+            border: none;
+            padding: 7px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 700;
+            color: var(--text-main);
+            cursor: pointer;
+            transition: all 0.15s;
+        }
+        .pill-nav-btn:hover:not(:disabled) { background: #e2e8f0; }
+        .pill-nav-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+
+        /* Inko風「今日のミッション」リスト */
+        .missions-card {
+            background: #ffffff;
+            border: 1px solid var(--border-soft);
+            border-radius: 22px;
+            padding: 16px 18px;
+            box-shadow: var(--shadow-card);
+        }
+        .missions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+        }
+        .missions-title {
+            font-size: 14px;
+            font-weight: 800;
+            color: var(--text-sub);
+        }
+        .missions-count {
+            background: var(--primary-soft);
+            color: var(--primary);
+            font-size: 12px;
+            font-weight: 800;
+            padding: 2px 10px;
+            border-radius: 999px;
+        }
+        .mission-row {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 11px 6px;
+            border-bottom: 1px solid #f1f5f9;
+            cursor: pointer;
+            transition: background 0.15s;
+            border-radius: 10px;
+        }
+        .mission-row:last-child { border-bottom: none; }
+        .mission-row:hover { background: #f8fafc; }
+        .mission-left {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            font-size: 14px;
+            font-weight: 700;
+            color: var(--text-main);
+        }
+        .mission-icon {
+            width: 32px;
+            height: 32px;
+            border-radius: 10px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 14px;
+        }
+        .mission-xp {
+            font-size: 13px;
+            font-weight: 800;
+            color: var(--text-muted);
+            display: flex;
+            align-items: center;
+            gap: 6px;
+        }
+        .mission-row.done .mission-xp { color: var(--success); }
+
+        /* ホーム画面の大きなブルーCTAボタン */
+        .primary-pill-cta {
+            background: linear-gradient(180deg, #3ea0ff 0%, #1d7dfa 100%);
+            color: #ffffff;
+            border: none;
+            width: 100%;
+            padding: 16px 24px;
+            border-radius: 999px;
+            font-size: 16px;
+            font-weight: 800;
+            cursor: pointer;
+            box-shadow: var(--shadow-float);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 10px;
+            transition: all 0.2s;
+        }
+        .primary-pill-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 18px 34px rgba(37, 137, 245, 0.32);
+        }
+
+        /* ==========================================================================
+           ② 発音＆暗記ドリルページ (Screenshot 13: ドリルと発音練習風)
+           ========================================================================== */
+        .drill-card {
+            background: #ffffff;
+            border: 1px solid var(--border-soft);
+            border-radius: 26px;
+            padding: 24px 20px;
+            text-align: center;
+            box-shadow: var(--shadow-card);
+        }
+        .word-chips-container {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 6px;
+            margin-bottom: 12px;
+        }
+        .word-chip {
+            font-size: 24px;
+            font-weight: 800;
+            color: var(--text-main);
+            padding: 4px 8px;
+            border-radius: 10px;
+            cursor: pointer;
+            transition: all 0.15s;
+            border-bottom: 3px solid transparent;
+        }
+        .word-chip:hover {
+            background: var(--primary-soft);
+            color: var(--primary);
+        }
+        .word-chip.word-good { color: #15803d; background: #dcfce7; border-bottom-color: #22c55e; }
+        .word-chip.word-close { color: #b45309; background: #fef3c7; border-bottom-color: #f59e0b; }
+        .word-chip.word-miss { color: #b91c1c; background: #fee2e2; border-bottom-color: #ef4444; }
+
+        .drill-japanese {
+            font-size: 15px;
+            font-weight: 600;
+            color: var(--text-sub);
+            margin-bottom: 22px;
+        }
+
+        /* 3つの丸型コントロールボタン (お手本 / もう一度発音 / ゆっくり) */
+        .drill-controls-trio {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 26px;
+            margin: 10px 0 18px;
+        }
+        .trio-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 6px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-sub);
+        }
+        .circle-sub-btn {
+            width: 52px;
+            height: 52px;
+            border-radius: 50%;
+            border: 1.5px solid #dbeafe;
+            background: #f8fbff;
+            color: var(--primary);
+            font-size: 18px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+        }
+        .circle-sub-btn:hover { background: var(--primary-soft); transform: scale(1.06); }
+        .circle-main-mic {
+            width: 74px;
+            height: 74px;
+            border-radius: 50%;
+            border: none;
+            background: linear-gradient(180deg, #3ea0ff 0%, #1d7dfa 100%);
+            color: #ffffff;
+            font-size: 26px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 25px rgba(37, 137, 245, 0.35);
+            transition: all 0.2s;
+        }
+        .circle-main-mic:hover { transform: scale(1.06); }
+        .circle-main-mic.recording {
+            background: linear-gradient(180deg, #ff5b5b 0%, #dc2626 100%);
+            animation: micPulse 1.4s infinite;
+        }
+        @keyframes micPulse {
+            0% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0.55); }
+            70% { box-shadow: 0 0 0 16px rgba(239, 68, 68, 0); }
+            100% { box-shadow: 0 0 0 0 rgba(239, 68, 68, 0); }
+        }
+
+        /* Inko風 スコアリング＆3本ゲージパネル */
+        .score-panel {
+            display: none;
+            background: #f8fafc;
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            padding: 18px;
+            margin-top: 14px;
+            text-align: left;
+        }
+        .score-top-row {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            margin-bottom: 14px;
+        }
+        .score-ring {
+            width: 66px;
+            height: 66px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 22px;
+            font-weight: 800;
+            color: var(--text-main);
+            background: conic-gradient(var(--success) var(--pct, 85%), #e2e8f0 0);
+            position: relative;
+            flex-shrink: 0;
+        }
+        .score-ring::before {
+            content: "";
+            position: absolute;
+            inset: 6px;
+            background: #ffffff;
+            border-radius: 50%;
+        }
+        .score-ring span { position: relative; z-index: 1; }
+        .metric-bar-row {
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            font-size: 12px;
+            font-weight: 700;
+            color: var(--text-sub);
+            margin-bottom: 7px;
+        }
+        .metric-label { width: 68px; }
+        .metric-track {
+            flex: 1;
+            height: 8px;
+            background: #e2e8f0;
+            border-radius: 999px;
+            overflow: hidden;
+        }
+        .metric-fill {
+            height: 100%;
+            background: #22c55e;
+            border-radius: 999px;
+            transition: width 0.5s ease;
+        }
+        .metric-val { width: 28px; text-align: right; font-weight: 800; }
+
+        /* ==========================================================================
+           ④ 60秒ロールプレイ通話ページ (Screenshot 03 / 14 / 23 風)
+           ========================================================================== */
+        .call-screen-card {
+            background: linear-gradient(180deg, #1e3a2f 0%, #152821 100%);
+            color: #ffffff;
+            border-radius: 30px;
+            padding: 22px 20px 26px;
+            text-align: center;
+            position: relative;
+            box-shadow: 0 20px 45px rgba(15, 23, 42, 0.22);
+            min-height: 540px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+        .call-top-bar {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 14px;
+            font-weight: 700;
+            color: rgba(255, 255, 255, 0.85);
+        }
+        .call-timer-pill {
+            background: rgba(255, 255, 255, 0.14);
+            padding: 5px 14px;
+            border-radius: 999px;
+            font-size: 13px;
+            font-weight: 800;
+        }
+        /* キャラクターを囲む円形タイマーリング (Screenshot 23風) */
+        .call-avatar-ring {
+            width: 196px;
+            height: 196px;
+            margin: 14px auto 10px;
+            border-radius: 50%;
+            position: relative;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: conic-gradient(rgba(255,255,255,0.85) var(--call-pct, 100%), rgba(255,255,255,0.15) 0);
+            padding: 4px;
+        }
+        .call-avatar-inner {
+            width: 100%;
+            height: 100%;
+            border-radius: 50%;
+            background: radial-gradient(circle, #274c3e 0%, #193329 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .call-ai-en {
+            font-size: 19px;
+            font-weight: 800;
+            color: #ffffff;
+            line-height: 1.45;
+            margin: 8px 0 6px;
+        }
+        .call-ai-ja {
+            font-size: 13px;
+            color: rgba(255, 255, 255, 0.78);
+            margin-bottom: 12px;
+        }
+        /* 「💡 こう言ってみよう（タップで表示）」すりガラスヒント枠 (Screenshot 03 / 14風) */
+        .try-saying-box {
+            background: rgba(255, 255, 255, 0.14);
+            backdrop-filter: blur(10px);
+            -webkit-backdrop-filter: blur(10px);
+            border: 1px solid rgba(255, 255, 255, 0.22);
+            border-radius: 20px;
+            padding: 14px 16px;
+            text-align: left;
+            margin: 8px 0 18px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .try-saying-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            font-size: 12px;
+            font-weight: 700;
+            color: #fde047;
+            margin-bottom: 6px;
+        }
+        .try-saying-content {
+            font-size: 15px;
+            font-weight: 700;
+            color: #ffffff;
+            transition: filter 0.25s ease;
+        }
+        .try-saying-content.blurred {
+            filter: blur(6px);
+            user-select: none;
+        }
+        .call-bottom-controls {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 24px;
+            margin-top: 6px;
+        }
+        .call-mic-circle {
+            width: 78px;
+            height: 78px;
+            border-radius: 50%;
+            border: 6px solid rgba(255, 255, 255, 0.25);
+            background: #ffffff;
+            color: #0f172a;
+            font-size: 26px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.2s;
+            box-shadow: 0 8px 25px rgba(0, 0, 0, 0.25);
+        }
+        .call-mic-circle.recording {
+            background: #ef4444;
+            color: #ffffff;
+            border-color: rgba(239, 68, 68, 0.4);
+            animation: micPulse 1.4s infinite;
+        }
+        .call-end-circle {
+            width: 56px;
+            height: 56px;
+            border-radius: 50%;
+            border: none;
+            background: #ef4444;
+            color: #ffffff;
+            font-size: 20px;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 6px 16px rgba(239, 68, 68, 0.35);
+        }
+
+        /* 自動生成レッスンノート (Screenshot 13 / 15風) */
+        .lesson-note-card {
+            background: linear-gradient(180deg, #d8ecff 0%, #ffffff 35%);
+            border: 1.5px solid #bfdbfe;
+            border-radius: 26px;
+            padding: 20px;
+            box-shadow: var(--shadow-card);
+        }
+        .rephrase-item {
+            background: #ffffff;
+            border: 1px solid #e2e8f0;
+            border-radius: 16px;
+            padding: 14px;
+            margin-top: 10px;
+        }
+        .rephrase-original {
+            font-size: 13px;
+            color: var(--text-muted);
+            text-decoration: line-through;
+        }
+        .rephrase-natural {
+            font-size: 16px;
+            font-weight: 800;
+            color: var(--primary-dark);
+            margin-top: 4px;
+        }
+
+        /* ==========================================================================
+           ⑤ 学習記録＆復習ポッドキャストページ (Screenshot 11 / 13 / 17風)
+           ========================================================================== */
+        .stats-trio-grid {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 10px;
+        }
+        .stat-box {
+            background: #ffffff;
+            border: 1px solid var(--border-soft);
+            border-radius: 20px;
+            padding: 16px 10px;
+            text-align: center;
+            box-shadow: var(--shadow-card);
+        }
+        .stat-icon { font-size: 26px; margin-bottom: 4px; }
+        .stat-num { font-size: 24px; font-weight: 800; color: var(--text-main); }
+        .stat-label { font-size: 12px; font-weight: 700; color: var(--text-sub); }
+
+        /* 学習の記録ヒートマップ (Screenshot 11風) */
+        .heatmap-grid {
+            display: grid;
+            grid-template-columns: repeat(14, 1fr);
+            gap: 5px;
+            margin-top: 10px;
+        }
+        .heat-cell {
+            aspect-ratio: 1;
+            border-radius: 5px;
+            background: #e2e8f0;
+        }
+        .heat-cell.lv1 { background: #bae6fd; }
+        .heat-cell.lv2 { background: #38bdf8; }
+        .heat-cell.lv3 { background: #0284c7; }
+
+        /* 復習ポッドキャストカード (Screenshot 13 右端風) */
+        .podcast-line {
+            padding: 10px 12px;
+            border-radius: 12px;
+            margin-bottom: 8px;
+            border: 1px solid #f1f5f9;
+            transition: all 0.2s;
+        }
+        .podcast-line.active-line {
+            background: var(--primary-soft);
+            border-color: #93c5fd;
+            transform: scale(1.01);
+        }
+
+        /* ==========================================================================
+           下部固定ナビゲーションタブバー (5ページをワンタップで行き来！)
+           ========================================================================== */
+        .bottom-nav {
+            position: fixed;
+            bottom: 0;
+            width: 100%;
+            max-width: 520px;
+            background: rgba(255, 255, 255, 0.96);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border-top: 1px solid var(--border-soft);
+            display: flex;
+            justify-content: space-around;
+            padding: 8px 6px 12px;
+            z-index: 100;
+            box-shadow: 0 -6px 24px rgba(15, 23, 42, 0.05);
+        }
+        @media (min-width: 560px) {
+            .bottom-nav {
+                border-bottom-left-radius: 30px;
+                border-bottom-right-radius: 30px;
+                bottom: 30px;
+            }
+        }
+        .tab-btn {
+            background: none;
+            border: none;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            gap: 4px;
+            font-size: 11px;
+            font-weight: 700;
+            color: var(--text-muted);
+            cursor: pointer;
+            padding: 6px 10px;
+            border-radius: 14px;
+            transition: all 0.2s;
+            flex: 1;
+        }
+        .tab-btn i { font-size: 18px; }
+        .tab-btn.active {
+            color: var(--primary);
+            background: var(--primary-soft);
+            font-weight: 800;
+        }
+
+        /* チャットバブル (AI文法コーチ用) */
+        .chat-history {
+            max-height: 260px;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 10px;
+            padding: 12px;
+            background: #f8fafc;
+            border-radius: 16px;
+            border: 1px solid var(--border-soft);
+        }
+        .chat-msg {
+            max-width: 88%;
+            padding: 10px 14px;
+            border-radius: 16px;
+            font-size: 14px;
+            line-height: 1.5;
+            color: var(--text-main);
+        }
+        .chat-msg.ai {
+            align-self: flex-start;
+            background: #ffffff;
+            border: 1px solid var(--border-soft);
+            border-bottom-left-radius: 4px;
+        }
+        .chat-msg.user {
+            align-self: flex-end;
+            background: var(--primary);
+            color: #ffffff;
+            border-bottom-right-radius: 4px;
+        }
+
+        /* モーダル共通 */
+        .modal-overlay {
+            display: none;
+            position: fixed;
+            inset: 0;
+            background: rgba(15, 23, 42, 0.55);
+            backdrop-filter: blur(4px);
+            z-index: 1000;
+            justify-content: center;
+            align-items: center;
+            padding: 16px;
+        }
+        .modal {
+            background: #ffffff;
+            padding: 24px;
+            border-radius: 24px;
+            width: 100%;
+            max-width: 440px;
+            max-height: 88vh;
+            overflow-y: auto;
+            box-shadow: 0 25px 60px rgba(15, 23, 42, 0.25);
+            color: var(--text-main);
+        }
+        .modal h3 { margin-top: 0; font-size: 18px; }
+        .modal input, .modal select, .modal textarea {
+            width: 100%;
+            padding: 10px 12px;
+            margin: 6px 0 14px;
+            border: 1px solid #cbd5e1;
+            border-radius: 12px;
+            font-family: inherit;
+            font-size: 14px;
+            color: var(--text-main);
+            background: #f8fafc;
+        }
+        .modal-btns { display: flex; justify-content: flex-end; gap: 10px; margin-top: 10px; }
+        .btn-cancel { background: #e2e8f0; color: var(--text-main); border: none; padding: 10px 18px; border-radius: 999px; font-weight: 700; cursor: pointer; }
+        .btn-save { background: var(--primary); color: #ffffff; border: none; padding: 10px 20px; border-radius: 999px; font-weight: 700; cursor: pointer; }
+
+        /* 相棒カスタマイザー用チップ */
+        .swatch-row { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 14px; }
+        .color-swatch {
+            width: 34px; height: 34px; border-radius: 50%; cursor: pointer;
+            border: 3px solid transparent; transition: transform 0.15s;
+        }
+        .color-swatch.active { border-color: #0f172a; transform: scale(1.12); }
+        .acc-chip {
+            padding: 6px 12px; border-radius: 12px; border: 1.5px solid #e2e8f0;
+            background: #f8fafc; cursor: pointer; font-size: 16px;
+        }
+        .acc-chip.active { border-color: var(--primary); background: var(--primary-soft); }
+
+        /* ==========================================================================
+           追加ブラッシュアップ用スタイル (紙吹雪・単語発光・質問チップ・フラッシュカード)
+           ========================================================================== */
+        .word-chip.speaking-word {
+            transform: translateY(-3px) scale(1.08);
+            border-color: var(--primary);
+            background: #e0f2fe;
+            color: var(--primary-dark);
+            box-shadow: 0 6px 14px rgba(37, 137, 245, 0.25);
+        }
+        .circle-sub-btn {
+            width: 54px;
+            height: 54px;
+            font-size: 20px;
+            transition: transform 0.18s cubic-bezier(0.34, 1.56, 0.64, 1), background 0.2s, border-color 0.2s;
+        }
+        .circle-sub-btn:active, .circle-main-mic:active {
+            transform: scale(0.92);
+        }
+        .next-drill-cta {
+            margin-top: 12px;
+            width: 100%;
+            background: linear-gradient(180deg, #22c55e 0%, #16a34a 100%);
+            color: #ffffff;
+            border: none;
+            border-radius: 999px;
+            padding: 13px 20px;
+            font-size: 15px;
+            font-weight: 800;
+            cursor: pointer;
+            display: none;
+            align-items: center;
+            justify-content: center;
+            gap: 8px;
+            box-shadow: 0 8px 20px rgba(34, 197, 94, 0.28);
+            animation: popInCard 0.35s ease;
+        }
+        .next-drill-cta:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 12px 24px rgba(34, 197, 94, 0.36);
+        }
+        @keyframes popInCard {
+            0% { opacity: 0; transform: translateY(8px) scale(0.96); }
+            100% { opacity: 1; transform: translateY(0) scale(1); }
+        }
+
+        /* ワンタップ質問チップ (Page 3: AIコーチ) */
+        .quick-q-row {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 7px;
+            margin-top: 12px;
+            margin-bottom: 6px;
+        }
+        .quick-q-chip {
+            background: #fdf2f8;
+            border: 1.5px solid #fbcfe8;
+            color: #be185d;
+            border-radius: 999px;
+            padding: 6px 12px;
+            font-size: 12px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.18s;
+            display: inline-flex;
+            align-items: center;
+            gap: 5px;
+        }
+        .quick-q-chip:hover {
+            background: #fce7f3;
+            border-color: #f472b6;
+            transform: translateY(-1px);
+        }
+
+        /* ロールプレイ マイク操作モード切替ピル (Page 4) */
+        .mic-mode-switch {
+            display: inline-flex;
+            background: rgba(255, 255, 255, 0.14);
+            border: 1px solid rgba(255, 255, 255, 0.24);
+            border-radius: 999px;
+            padding: 3px;
+            margin-bottom: 10px;
+            gap: 4px;
+        }
+        .mic-mode-btn {
+            background: transparent;
+            color: rgba(255, 255, 255, 0.78);
+            border: none;
+            padding: 5px 12px;
+            border-radius: 999px;
+            font-size: 11px;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        .mic-mode-btn.active {
+            background: #ffffff;
+            color: #0284c7;
+            box-shadow: 0 2px 8px rgba(0, 0, 0, 0.15);
+        }
+
+        /* フラッシュカード（暗記テスト）モード (Page 5) */
+        .flashcard-stage {
+            background: linear-gradient(145deg, #ffffff 0%, #f0f7ff 100%);
+            border: 2px solid #bae6fd;
+            border-radius: 22px;
+            padding: 22px 18px;
+            text-align: center;
+            cursor: pointer;
+            position: relative;
+            min-height: 170px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            box-shadow: 0 10px 26px rgba(37, 137, 245, 0.1);
+            transition: transform 0.22s ease, box-shadow 0.22s ease;
+            user-select: none;
+        }
+        .flashcard-stage:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 14px 30px rgba(37, 137, 245, 0.16);
+        }
+        .flashcard-answer-box {
+            margin-top: 14px;
+            padding-top: 14px;
+            border-top: 1.5px dashed #bae6fd;
+            width: 100%;
+            animation: popInCard 0.25s ease;
+        }
+
+        /* 紙吹雪（コンフェッティ）アニメーション */
+        .confetti-piece {
+            position: fixed;
+            width: 10px;
+            height: 14px;
+            border-radius: 3px;
+            z-index: 9999;
+            pointer-events: none;
+            animation: confettiFall 2.2s cubic-bezier(0.25, 0.46, 0.45, 0.94) forwards;
+        }
+        @keyframes confettiFall {
+            0% { transform: translateY(-20px) rotate(0deg) scale(1); opacity: 1; }
+            100% { transform: translateY(85vh) rotate(680deg) scale(0.7); opacity: 0; }
+        }
+    </style>
+</head>
+<body data-page="home">
+    <div class="app-shell">
+        <!-- 上部ナビバー -->
+        <div class="topbar">
+            <div class="brand-pill" onclick="switchPage('home')" style="cursor:pointer;">
+                <span class="flag">🇺🇸</span>
+                <span>Grammar Master Pro</span>
+            </div>
+            <div class="topbar-actions">
+                <button class="icon-circle-btn" onclick="openMascotModal()" title="相棒キャラクターをカスタマイズ" style="color:#0284c7; border-color:#bae6fd; background:#f0f9ff;">
+                    <i class="fas fa-face-smile" style="font-size:18px;"></i>
+                </button>
+                <button class="icon-circle-btn" onclick="toggleMenu()" title="チャプター目次を開く" style="color:#1e293b; border-color:#cbd5e1; background:#ffffff;">
+                    <i class="fas fa-list-ul" style="font-size:17px;"></i>
+                </button>
+                <button class="icon-circle-btn" onclick="openSettings()" title="設定" style="color:#d97706; border-color:#fcd34d; background:#fffbeb; box-shadow:0 2px 8px rgba(217,119,6,0.15);">
+                    <i class="fas fa-cog" style="font-size:18px;"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- 目次ドロワー -->
+        <div class="toc-menu" id="tocMenu"></div>
+
+        <!-- =================================================================
+             PAGE 1: ホーム画面 (Home / Journey — Inko風)
+             ================================================================= -->
+        <div class="app-page active" id="page-home">
+            <div class="hero-stage stage-home">
+                <div class="mascot-float-wrap" onclick="triggerMascotGreeting()" title="タップすると相棒が話しかけてくれます">
+                    <div class="mascot-figure" id="homeMascotSlot">
+                        <!-- JSでInko風ぷるぷるキャラ or 3Dキャラを描画 -->
+                    </div>
+                    <div class="mascot-shadow"></div>
+                </div>
+                <div class="speech-bubble" id="homeSpeechBubble">
+                    祐一さん、おかえりなさい！今日も1分から楽しく英語を話してみよう✨
+                </div>
+            </div>
+
+            <div class="page-body">
+                <!-- 現在のレッスン＆例文プレビュー -->
+                <div class="lesson-selector-card">
+                    <div class="lesson-badge-row">
+                        <span class="chapter-badge" id="homeChapterBadge">Chapter 1</span>
+                        <span id="homeProgressBadge" style="font-size:12px; font-weight:800; color:var(--text-muted);">1 / 50</span>
+                    </div>
+                    <div class="section-title-main" id="homeSectionTitle">Section Title</div>
+                    <div class="sentence-preview-box">
+                        <div class="sentence-preview-en" id="homeEnglishPreview">Loading...</div>
+                        <div class="sentence-preview-ja" id="homeJapanesePreview">読み込み中...</div>
+                    </div>
+                    <div class="mini-nav-row">
+                        <button class="pill-nav-btn" id="homePrevBtn" onclick="prevItem()"><i class="fas fa-chevron-left"></i> 前の例文</button>
+                        <button class="pill-nav-btn" onclick="playAudio()" style="background:var(--primary-soft); color:var(--primary);"><i class="fas fa-volume-up"></i> 音声を聞く</button>
+                        <button class="pill-nav-btn" id="homeNextBtn" onclick="nextItem()">次の例文 <i class="fas fa-chevron-right"></i></button>
+                    </div>
+                </div>
+
+                <!-- 今日のミッション (Screenshot 21 / 22風) -->
+                <div class="missions-card">
+                    <div class="missions-header">
+                        <span class="missions-title">🎯 今日のミッション（タップでページ移動）</span>
+                        <span class="missions-count" id="missionCountBadge">0 / 3</span>
+                    </div>
+                    <div class="mission-row" id="missionDrillRow" onclick="switchPage('drill')">
+                        <div class="mission-left">
+                            <div class="mission-icon" style="background:#fef3c7; color:#d97706;"><i class="fas fa-microphone-lines"></i></div>
+                            <div>
+                                <div>発音＆暗記ドリルに挑戦する</div>
+                                <div style="font-size:11px; color:var(--text-muted); font-weight:600;">単語ごとの色分け採点＆スコア測定</div>
+                            </div>
+                        </div>
+                        <div class="mission-xp"><span id="missionDrillStatus">+20 XP</span> <i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="mission-row" id="missionCoachRow" onclick="switchPage('coach')">
+                        <div class="mission-left">
+                            <div class="mission-icon" style="background:#fce7f3; color:#db2777;"><i class="fas fa-graduation-cap"></i></div>
+                            <div>
+                                <div>AI文法コーチの解説＆ノート</div>
+                                <div style="font-size:11px; color:var(--text-muted); font-weight:600;">ニュアンス深掘りと自分専用メモ</div>
+                            </div>
+                        </div>
+                        <div class="mission-xp"><span id="missionCoachStatus">+10 XP</span> <i class="fas fa-chevron-right"></i></div>
+                    </div>
+                    <div class="mission-row" id="missionRoleplayRow" onclick="switchPage('roleplay')">
+                        <div class="mission-left">
+                            <div class="mission-icon" style="background:#dcfce7; color:#16a34a;"><i class="fas fa-phone-volume"></i></div>
+                            <div>
+                                <div>60秒AIロールプレイで話す</div>
+                                <div style="font-size:11px; color:var(--text-muted); font-weight:600;">日本語ミックスOK・自動レッスンノート付</div>
+                            </div>
+                        </div>
+                        <div class="mission-xp"><span id="missionRoleplayStatus">+30 XP</span> <i class="fas fa-chevron-right"></i></div>
+                    </div>
+                </div>
+
+                <!-- メインCTAボタン -->
+                <button class="primary-pill-cta" onclick="switchPage('drill')">
+                    <i class="fas fa-play-circle" style="font-size:20px;"></i> この例文で発音ドリルを始める
+                </button>
+            </div>
+        </div>
+
+        <!-- =================================================================
+             PAGE 2: 発音＆暗記ドリルページ (Drill — スターちゃん担当)
+             ================================================================= -->
+        <div class="app-page" id="page-drill">
+            <div class="hero-stage stage-drill">
+                <div class="mascot-float-wrap" onclick="playAudio()">
+                    <div class="mascot-figure" id="drillMascotFig">
+                        <img src="mascots/star-yellow.png" class="mascot-img" alt="Star Mascot">
+                    </div>
+                    <div class="mascot-shadow" style="background:radial-gradient(ellipse at center, rgba(234,179,8,0.28) 0%, rgba(234,179,8,0) 75%);"></div>
+                </div>
+                <div class="speech-bubble" id="drillSpeechBubble">
+                    英単語をタップすると個別の発音が聞けるよ！中央のマイクで発音してみてね⭐
+                </div>
+            </div>
+
+            <div class="page-body">
+                <div style="display:flex; justify-content:space-between; align-items:center;">
+                    <button class="pill-nav-btn" id="prevBtn" onclick="prevItem()"><i class="fas fa-chevron-left"></i> 前へ</button>
+                    <span id="progressText" style="font-size:13px; font-weight:800; color:var(--text-sub);">1 / 5</span>
+                    <button class="pill-nav-btn" id="nextBtn" onclick="nextItem()">次へ <i class="fas fa-chevron-right"></i></button>
+                </div>
+
+                <div class="drill-card">
+                    <!-- 互換用の非表示要素 (既存ロジック連携) -->
+                    <div id="englishText" style="display:none;"></div>
+                    <!-- 単語ごとにタップ＆色分けハイライトされるエリア -->
+                    <div class="word-chips-container" id="wordChipsContainer"></div>
+                    <div class="drill-japanese" id="japaneseText">日本語訳</div>
+
+                    <!-- 3つの丸型ボタン (Screenshot 13: お手本 / マイク / ゆっくり) -->
+                    <div class="drill-controls-trio">
+                        <div class="trio-item">
+                            <button class="circle-sub-btn" id="audioBtn" onclick="playAudio(0.95)">
+                                <i class="fas fa-volume-up"></i>
+                            </button>
+                            <span>お手本</span>
+                        </div>
+                        <div class="trio-item">
+                            <button class="circle-main-mic" id="micBtn" onclick="toggleRecording()">
+                                <i class="fas fa-microphone"></i>
+                            </button>
+                            <span id="micBtnLabel">タップして発音</span>
+                        </div>
+                        <div class="trio-item">
+                            <button class="circle-sub-btn" onclick="playAudio(0.68)">
+                                <i class="fas fa-turtle" style="font-size:16px;"></i>
+                            </button>
+                            <span>ゆっくり</span>
+                        </div>
+                    </div>
+
+                    <!-- お気に入り（学習済み）ワンタップ保存 -->
+                    <div style="display:flex; justify-content:center; gap:10px; margin-top:6px;">
+                        <button class="pill-nav-btn" id="bookmarkBtn" onclick="toggleBookmark()" style="border:1px solid #cbd5e1; background:#ffffff;">
+                            <i class="far fa-bookmark"></i> フレーズを保存する
+                        </button>
+                        <button class="pill-nav-btn" onclick="openAddSentenceModal()" style="color:var(--primary); background:var(--primary-soft);">
+                            <i class="fas fa-plus-circle"></i> 自作例文を追加
+                        </button>
+                    </div>
+
+                    <div id="customEditBtns" style="display:none; margin-top:12px; padding-top:12px; border-top:1px dashed #e2e8f0;">
+                        <button onclick="editCustomSentence()" style="background:none; border:none; color:#d97706; font-size:12px; font-weight:800; cursor:pointer; margin-right:14px;"><i class="fas fa-edit"></i> 例文を修正</button>
+                        <button onclick="deleteCustomSentence()" style="background:none; border:none; color:#dc2626; font-size:12px; font-weight:800; cursor:pointer;"><i class="fas fa-trash-alt"></i> 例文を削除</button>
+                    </div>
+
+                    <!-- Inko風 スコアリング結果パネル -->
+                    <div class="score-panel" id="feedbackArea">
+                        <div class="score-top-row">
+                            <div class="score-ring" id="scoreRing" style="--pct: 90%;">
+                                <span id="scoreNumber">90</span>
+                            </div>
+                            <div style="flex:1;">
+                                <div id="scoreTitleText" style="font-size:16px; font-weight:800; color:var(--text-main);">素晴らしい発音です！🎉</div>
+                                <div style="font-size:12px; color:var(--text-sub); margin-top:2px;">
+                                    聞き取り: <span id="transcribedText" style="font-weight:700; color:var(--primary-dark);"></span>
+                                </div>
+                            </div>
+                        </div>
+                        <div class="metric-bar-row">
+                            <span class="metric-label">正確さ</span>
+                            <div class="metric-track"><div class="metric-fill" id="barAccuracy" style="width:90%;"></div></div>
+                            <span class="metric-val" id="valAccuracy">90</span>
+                        </div>
+                        <div class="metric-bar-row">
+                            <span class="metric-label">なめらかさ</span>
+                            <div class="metric-track"><div class="metric-fill" id="barFluency" style="width:88%;"></div></div>
+                            <span class="metric-val" id="valFluency">88</span>
+                        </div>
+                        <div class="metric-bar-row">
+                            <span class="metric-label">完全さ</span>
+                            <div class="metric-track"><div class="metric-fill" id="barComplete" style="width:92%;"></div></div>
+                            <span class="metric-val" id="valComplete">92</span>
+                        </div>
+                        <div id="evaluationResult" style="margin-top:10px; font-size:13px; color:var(--text-main); background:#ffffff; padding:10px 12px; border-radius:12px; border:1px solid #e2e8f0;"></div>
+                        <button type="button" class="next-drill-cta" id="nextDrillCtaBtn" onclick="nextItem()">
+                            🎉 バッチリ合格！次の例文へ進む <i class="fas fa-arrow-right"></i>
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================
+             PAGE 3: AI文法コーチ＆ノートページ (Coach — 双葉ピンクちゃん担当)
+             ================================================================= -->
+        <div class="app-page" id="page-coach">
+            <div class="hero-stage stage-coach">
+                <div class="mascot-float-wrap">
+                    <div class="mascot-figure">
+                        <img src="mascots/sprout-pink.png" class="mascot-img" alt="Sprout Pink Mascot">
+                    </div>
+                    <div class="mascot-shadow" style="background:radial-gradient(ellipse at center, rgba(219,39,119,0.24) 0%, rgba(219,39,119,0) 75%);"></div>
+                </div>
+                <div class="speech-bubble">
+                    この文法のニュアンスや使い分け、なんでも私に質問してね🌱
+                </div>
+            </div>
+
+            <div class="page-body">
+                <div class="clean-card">
+                    <div style="font-size:12px; font-weight:800; color:#db2777; margin-bottom:4px;">📖 現在のターゲット例文</div>
+                    <div id="coachEnglishTarget" style="font-size:18px; font-weight:800; color:var(--text-main);"></div>
+                    <div id="coachJapaneseTarget" style="font-size:13px; color:var(--text-sub); margin-top:2px;"></div>
+                </div>
+
+                <!-- 文脈とニュアンス解説カード -->
+                <div class="clean-card" style="border-left:5px solid #f59e0b;">
+                    <div style="font-size:15px; font-weight:800; color:#b45309; display:flex; align-items:center; gap:8px; margin-bottom:8px;">
+                        <i class="fas fa-lightbulb"></i> 文脈とニュアンス
+                    </div>
+                    <div id="hintText" style="font-weight:800; color:#d97706; font-size:13px; margin-bottom:8px;"></div>
+                    <div id="notesText" style="font-size:14px; color:var(--text-main); line-height:1.65;"></div>
+
+                    <button class="primary-pill-cta" onclick="fetchAIExplanation()" style="margin-top:14px; padding:12px 18px; font-size:14px; background:linear-gradient(180deg, #ec4899 0%, #db2777 100%); box-shadow:0 8px 20px rgba(219,39,119,0.22);">
+                        <i class="fas fa-wand-magic-sparkles"></i> AIコーチにもっと詳しく解説してもらう
+                    </button>
+
+                    <!-- ワンタップ質問チップ（文字入力なしで即質問できるショートカット） -->
+                    <div class="quick-q-row">
+                        <button type="button" class="quick-q-chip" onclick="askQuickTutorQuestion('似た表現とのニュアンスの違いを教えてください')">💡 似た表現との違いは？</button>
+                        <button type="button" class="quick-q-chip" onclick="askQuickTutorQuestion('ネイティブが友達同士でもっとカジュアルに言うならどう言いますか？')">🗣️ もっとカジュアルに言うと？</button>
+                        <button type="button" class="quick-q-chip" onclick="askQuickTutorQuestion('この表現を使った日常会話の応用例文を3つ作ってください')">📝 別の例文を3つ作って</button>
+                        <button type="button" class="quick-q-chip" onclick="askQuickTutorQuestion('ネイティブらしく自然に発音するコツ（音の繋がり・強勢）を教えてください')">🎯 発音・リンキングのコツは？</button>
+                    </div>
+
+                    <div id="aiPopup" style="display:none; margin-top:10px;">
+                        <div class="chat-history" id="tutorChatHistory"></div>
+                        <div style="display:flex; gap:8px; margin-top:10px;">
+                            <input type="text" id="tutorChatInput" placeholder="さらに質問する (例: ビジネスでも使える？)" style="flex:1; padding:10px 14px; border:1px solid #cbd5e1; border-radius:999px; font-size:13px; outline:none;" onkeypress="if(event.key==='Enter') sendTutorQuestion()">
+                            <button id="tutorSendBtn" onclick="sendTutorQuestion()" style="background:#db2777; color:white; border:none; padding:10px 18px; border-radius:999px; cursor:pointer; font-weight:800;"><i class="fas fa-paper-plane"></i></button>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- 自分専用メモカード -->
+                <div class="clean-card" style="background:linear-gradient(180deg, #ffffff 0%, #f8fbff 100%);">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <div style="font-size:14px; font-weight:800; color:var(--text-main);">
+                            <i class="fas fa-pen-to-square" style="color:var(--primary);"></i> 祐一さんの自分専用メモ
+                        </div>
+                        <button type="button" class="pill-nav-btn" onclick="saveUserNote()" style="padding:5px 12px; font-size:11px; background:var(--primary-soft); color:var(--primary);">
+                            <i class="fas fa-check"></i> メモを保存
+                        </button>
+                    </div>
+                    <textarea id="userNoteInput" rows="3" style="width:100%; border:1.5px solid #cbd5e1; border-radius:14px; padding:12px; font-family:inherit; font-size:14px; line-height:1.6; resize:vertical; background:#ffffff;" placeholder="気づいたポイントや覚え方をメモできます（自動保存）" onblur="saveUserNote()"></textarea>
+                    <div id="noteSaveMsg" style="font-size:12px; color:var(--success); font-weight:700; text-align:right; margin-top:4px; display:none;">✓ メモを保存しました</div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================
+             PAGE 4: 60秒ロールプレイ通話ページ (Roleplay — Inko通話UI＆レッスンノート)
+             ================================================================= -->
+        <div class="app-page" id="page-roleplay">
+            <div class="page-body" style="padding-top:8px;">
+                <div class="call-screen-card" id="callScreenCard">
+                    <div class="call-top-bar">
+                        <span><i class="fas fa-comments"></i> 60秒ロールプレイ</span>
+                        <span class="call-timer-pill" id="callTimerBadge">⏱️ 01:00</span>
+                    </div>
+
+                    <div>
+                        <div class="call-avatar-ring" id="callAvatarRing" style="--call-pct: 100%;">
+                            <div class="call-avatar-inner">
+                                <div class="mascot-figure">
+                                    <img src="mascots/jelly-pink.png" class="mascot-img" style="width:126px; height:126px;" alt="Roleplay Mascot">
+                                </div>
+                            </div>
+                        </div>
+
+                        <div class="call-ai-en" id="callAiEnglish">
+                            Ready to practice together? Tap Start below!
+                        </div>
+                        <div class="call-ai-ja" id="callAiJapanese">
+                            下のボタンを押すと、今の例文を使った60秒の会話練習が始まります（日本語が混ざってもAIが英語に直してくれます！）
+                        </div>
+                    </div>
+
+                    <!-- Inko風「💡 こう言ってみよう（タップで表示）」すりガラスカード -->
+                    <div class="try-saying-box" onclick="toggleTrySayingBlur()">
+                        <div class="try-saying-header">
+                            <span>💡 こう言ってみよう（英語に詰まったら参考に！）</span>
+                            <div style="display:flex; gap:6px; align-items:center;">
+                                <button type="button" onclick="event.stopPropagation(); speakArbitraryText(document.getElementById('trySayingText').innerText, 0.92)" style="background:rgba(255,255,255,0.28); border:none; padding:2px 9px; border-radius:999px; color:#fff; font-size:11px; font-weight:800; cursor:pointer;">🔊 お手本</button>
+                                <span id="trySayingToggleLabel" style="background:rgba(255,255,255,0.2); padding:2px 8px; border-radius:999px; color:#fff;">タップで隠す/表示</span>
+                            </div>
+                        </div>
+                        <div class="try-saying-content" id="trySayingText">
+                            ここに返答のヒントが表示されます
+                        </div>
+                    </div>
+
+                    <!-- 聞き取り中プレビュー -->
+                    <div id="callLiveTranscript" style="min-height:22px; font-size:13px; color:#bae6fd; font-weight:700;"></div>
+
+                    <!-- マイク操作モード切替 (タップ切替 vs Inko式押している間だけ話す) -->
+                    <div style="text-align:center;">
+                        <div class="mic-mode-switch">
+                            <button type="button" class="mic-mode-btn active" id="micModeTapBtn" onclick="setRoleplayMicMode('tap')">👆 タップ切替モード</button>
+                            <button type="button" class="mic-mode-btn" id="micModeHoldBtn" onclick="setRoleplayMicMode('hold')">🎙️ 押して話す (Inko式)</button>
+                        </div>
+                    </div>
+
+                    <!-- 通話コントロール（丸いマイク＆赤い終了ボタン） -->
+                    <div class="call-bottom-controls">
+                        <button class="call-mic-circle" id="chatMicBtn"
+                            onclick="handleRoleplayMicClick()"
+                            onmousedown="handleRoleplayMicDown(event)"
+                            onmouseup="handleRoleplayMicUp(event)"
+                            ontouchstart="handleRoleplayMicDown(event)"
+                            ontouchend="handleRoleplayMicUp(event)"
+                            title="マイクで話す">
+                            <i class="fas fa-microphone"></i>
+                        </button>
+                        <button class="call-end-circle" onclick="finishRoleplayAndBuildNote()" title="会話を終了してレッスンノートを作成">
+                            <i class="fas fa-phone-slash"></i>
+                        </button>
+                    </div>
+                    <div id="roleplayMicGuideText" style="font-size:11px; color:rgba(255,255,255,0.75); margin-top:6px;">
+                        🎙️ マイクを押して話し、話し終えたらもう一度押してください（日本語混じりでもOK！）
+                    </div>
+                </div>
+
+                <!-- 会話ログ＆ChatGPT連携 -->
+                <div class="clean-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:8px;">
+                        <span style="font-size:14px; font-weight:800;">💬 会話の履歴</span>
+                        <button class="pill-nav-btn" onclick="startRoleplaySession()" style="background:var(--primary-soft); color:var(--primary);">
+                            <i class="fas fa-rotate-right"></i> 新しい会話を始める
+                        </button>
+                    </div>
+                    <div class="chat-history" id="chatHistory" style="max-height:180px;"></div>
+                    <button onclick="openChatGPTWithContext()" style="width:100%; margin-top:10px; background:#10b981; color:#fff; border:none; padding:11px; border-radius:999px; font-weight:800; font-size:13px; cursor:pointer;">
+                        <i class="fas fa-external-link-alt"></i> ChatGPTアプリでさらに無制限に音声会話する
+                    </button>
+                </div>
+
+                <!-- 自動生成レッスンノート (Screenshot 13 / 15風 — 会話終了時に自動生成) -->
+                <div class="lesson-note-card" id="lessonNoteCard" style="display:none;">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <div>
+                            <div style="font-size:11px; font-weight:800; color:var(--primary);">✨ 自動生成レッスンノート</div>
+                            <div style="font-size:18px; font-weight:800; color:var(--text-main);" id="lessonNoteTitle">今日のロールプレイ振り返り</div>
+                        </div>
+                        <span style="font-size:28px;">📓</span>
+                    </div>
+                    <div id="lessonNoteSummary" style="font-size:13px; color:var(--text-sub); margin-top:8px;"></div>
+                    <div id="lessonNoteRephrases" style="margin-top:12px;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- =================================================================
+             PAGE 5: 学習記録＆復習ポッドキャストページ (Progress & Podcast)
+             ================================================================= -->
+        <div class="app-page" id="page-progress">
+            <div class="hero-stage stage-progress">
+                <div class="mascot-float-wrap">
+                    <div class="mascot-figure" style="display:flex; gap:10px; align-items:center;">
+                        <img src="mascots/jelly-blue.png" class="mascot-img" style="width:105px; height:105px;" alt="Blue Jelly">
+                        <img src="mascots/cat.png" class="mascot-img" style="width:95px; height:95px;" alt="Cat Mascot">
+                    </div>
+                    <div class="mascot-shadow"></div>
+                </div>
+                <div class="speech-bubble">
+                    祐一さんの学習の記録と、2人の掛け合いで聞ける「復習ポッドキャスト」だよ🎧
+                </div>
+            </div>
+
+            <div class="page-body">
+                <!-- 3つの成長カード (Screenshot 17 / 18風) -->
+                <div class="stats-trio-grid">
+                    <div class="stat-box">
+                        <div class="stat-icon">🔥</div>
+                        <div class="stat-num" id="statStreakNum">1</div>
+                        <div class="stat-label">連続学習日数</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">⭐</div>
+                        <div class="stat-num" id="statSavedCount">0</div>
+                        <div class="stat-label">保存フレーズ</div>
+                    </div>
+                    <div class="stat-box">
+                        <div class="stat-icon">⚡</div>
+                        <div class="stat-num" id="statTotalXp">0</div>
+                        <div class="stat-label">累計 XP</div>
+                    </div>
+                </div>
+
+                <!-- 学習の記録ヒートマップ (Screenshot 11風) -->
+                <div class="clean-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center;">
+                        <span style="font-size:14px; font-weight:800;"><i class="fas fa-calendar-check" style="color:var(--primary);"></i> 学習の記録</span>
+                        <span style="font-size:12px; color:var(--success); font-weight:800;">今日も達成！この調子でキープしよう</span>
+                    </div>
+                    <div class="heatmap-grid" id="heatmapGrid"></div>
+                </div>
+
+                <!-- 2人の掛け合い「復習ポッドキャスト」 (Screenshot 13 右端風) -->
+                <div class="clean-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:10px; flex-wrap:wrap; gap:8px;">
+                        <div>
+                            <div style="font-size:11px; font-weight:800; color:var(--primary);">🎧 復習ポッドキャスト (男女2人の掛け合い)</div>
+                            <div style="font-size:16px; font-weight:800; color:var(--text-main);">Mia 👩 ＆ Ken 👨 のミニ会話ラジオ</div>
+                        </div>
+                        <div style="display:flex; gap:6px; align-items:center;">
+                            <select id="podcastSpeedSelect" style="padding:6px 10px; border-radius:999px; border:1px solid #cbd5e1; font-size:12px; font-weight:800; background:#f8fafc; color:var(--text-main);">
+                                <option value="0.82">🐢 ゆっくり (0.85x)</option>
+                                <option value="0.95" selected>🎧 通常 (1.0x)</option>
+                                <option value="1.12">⚡ 速め (1.15x)</option>
+                            </select>
+                            <button class="pill-nav-btn" id="podcastPlayBtn" onclick="togglePodcastPlayback()" style="background:var(--primary); color:#fff;">
+                                <i class="fas fa-play"></i> 再生する
+                            </button>
+                        </div>
+                    </div>
+                    <div id="podcastTranscriptBox"></div>
+                </div>
+
+                <!-- 保存したフレーズ一覧 ＆ フラッシュカード暗記テスト (Screenshot 13 左から2番目風) -->
+                <div class="clean-card">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
+                        <div style="font-size:15px; font-weight:800;">
+                            🔖 保存フレーズ＆暗記カード
+                        </div>
+                        <div style="display:inline-flex; background:#f1f5f9; padding:3px; border-radius:999px; gap:4px;">
+                            <button type="button" id="viewModeListBtn" onclick="switchSavedPhrasesView('list')" style="border:none; background:#ffffff; color:var(--primary-dark); padding:5px 12px; border-radius:999px; font-size:12px; font-weight:800; cursor:pointer; box-shadow:0 1px 4px rgba(0,0,0,0.08);">
+                                📋 一覧リスト
+                            </button>
+                            <button type="button" id="viewModeFlashBtn" onclick="switchSavedPhrasesView('flashcard')" style="border:none; background:transparent; color:var(--text-sub); padding:5px 12px; border-radius:999px; font-size:12px; font-weight:800; cursor:pointer;">
+                                🃏 フラッシュカード
+                            </button>
+                        </div>
+                    </div>
+                    <div id="savedPhrasesList" style="display:flex; flex-direction:column; gap:10px;"></div>
+                    <div id="flashcardContainer" style="display:none;"></div>
+                </div>
+            </div>
+        </div>
+
+        <!-- 下部固定5タブナビゲーション -->
+        <nav class="bottom-nav">
+            <button class="tab-btn active" data-tab="home" onclick="switchPage('home')">
+                <i class="fas fa-house"></i>
+                <span>ホーム</span>
+            </button>
+            <button class="tab-btn" data-tab="drill" onclick="switchPage('drill')">
+                <i class="fas fa-microphone-lines"></i>
+                <span>発音ドリル</span>
+            </button>
+            <button class="tab-btn" data-tab="coach" onclick="switchPage('coach')">
+                <i class="fas fa-graduation-cap"></i>
+                <span>AIコーチ</span>
+            </button>
+            <button class="tab-btn" data-tab="roleplay" onclick="switchPage('roleplay')">
+                <i class="fas fa-phone-volume"></i>
+                <span>ロールプレイ</span>
+            </button>
+            <button class="tab-btn" data-tab="progress" onclick="switchPage('progress')">
+                <i class="fas fa-chart-pie"></i>
+                <span>記録・復習</span>
+            </button>
+        </nav>
+    </div>
+
+    <!-- =================================================================
+         MODAL 1: 相棒キャラクター作成＆着せ替え (Screenshot 06 / 07風)
+         ================================================================= -->
+    <div class="modal-overlay" id="mascotModal">
+        <div class="modal">
+            <h3>✨ 相棒キャラクターをカスタマイズ</h3>
+            <p style="font-size:13px; color:var(--text-sub); margin-top:0;">ホーム画面で迎えてくれる相棒を、Inko風ぷるぷるキャラと3Dマスコットから自由に選べます。</p>
+
+            <!-- リアルタイム着せ替えプレビュー枠 -->
+            <div style="background:radial-gradient(circle at 50% 30%, #ffffff 0%, #d8ecff 100%); border-radius:20px; padding:42px 12px 14px; text-align:center; margin-bottom:14px; border:1px solid #dbeafe;">
+                <div class="mascot-float-wrap" style="margin:12px auto 0;">
+                    <div class="mascot-figure" id="modalMascotPreviewSlot"></div>
+                    <div class="mascot-shadow"></div>
+                </div>
+            </div>
+
+            <label style="font-size:13px; font-weight:800;">1. キャラクターのタイプ</label>
+            <select id="mascotTypeSelect" onchange="updateMascotPreview()">
+                <option value="inko-blob">💧 Inko風 ぷるぷるゼリー相棒（瞬き・着せ替え対応）</option>
+                <option value="alien-blue">🔵 ブルー・ベビーエイリアン (3D)</option>
+                <option value="jelly-blue">🪼 ブルー・クラゲちゃん (3D)</option>
+                <option value="jelly-pink">🌸 ピンク・クラゲちゃん (3D)</option>
+                <option value="sprout-pink">🌱 双葉つきピンクちゃん (3D)</option>
+                <option value="star-yellow">⭐ イエロー・スターちゃん (3D)</option>
+                <option value="cat">🐱 グレー猫ちゃん</option>
+            </select>
+
+            <div id="inkoBlobCustomOptions">
+                <label style="font-size:13px; font-weight:800; display:block; margin-bottom:6px;">2. ぷるぷる相棒の色（Soda / Momo / Lemon / Mint...）</label>
+                <div class="swatch-row" id="blobColorSwatches">
+                    <div class="color-swatch active" data-color="linear-gradient(135deg, #a5f3fc 0%, #38bdf8 55%, #0284c7 100%)" style="background:#38bdf8;" onclick="selectBlobColor(this)"></div>
+                    <div class="color-swatch" data-color="linear-gradient(135deg, #fbcfe8 0%, #f472b6 55%, #db2777 100%)" style="background:#f472b6;" onclick="selectBlobColor(this)"></div>
+                    <div class="color-swatch" data-color="linear-gradient(135deg, #fef08a 0%, #facc15 55%, #ca8a04 100%)" style="background:#facc15;" onclick="selectBlobColor(this)"></div>
+                    <div class="color-swatch" data-color="linear-gradient(135deg, #a7f3d0 0%, #34d399 55%, #059669 100%)" style="background:#34d399;" onclick="selectBlobColor(this)"></div>
+                    <div class="color-swatch" data-color="linear-gradient(135deg, #ddd6fe 0%, #a78bfa 55%, #7c3aed 100%)" style="background:#a78bfa;" onclick="selectBlobColor(this)"></div>
+                    <div class="color-swatch" data-color="linear-gradient(135deg, #fed7aa 0%, #fb923c 55%, #ea580c 100%)" style="background:#fb923c;" onclick="selectBlobColor(this)"></div>
+                </div>
+
+                <label style="font-size:13px; font-weight:800; display:block; margin-bottom:6px;">3. 小物・アクセサリー（めがね・帽子・王冠）</label>
+                <div class="swatch-row" id="blobAccSwatches">
+                    <button type="button" class="acc-chip active" data-acc="" onclick="selectBlobAcc(this)">なし</button>
+                    <button type="button" class="acc-chip" data-acc="🕶️" onclick="selectBlobAcc(this)" title="サングラス">🕶️</button>
+                    <button type="button" class="acc-chip" data-acc="👓" onclick="selectBlobAcc(this)" title="丸メガネ">👓</button>
+                    <button type="button" class="acc-chip" data-acc="🧶" onclick="selectBlobAcc(this)" title="ニット帽">🧶</button>
+                    <button type="button" class="acc-chip" data-acc="🧢" onclick="selectBlobAcc(this)" title="キャップ">🧢</button>
+                    <button type="button" class="acc-chip" data-acc="👑" onclick="selectBlobAcc(this)" title="王冠">👑</button>
+                    <button type="button" class="acc-chip" data-acc="🎀" onclick="selectBlobAcc(this)" title="リボン">🎀</button>
+                </div>
+
+                <label style="font-size:13px; font-weight:800; display:block; margin-bottom:4px;">4. かたち</label>
+                <select id="blobShapeSelect" onchange="updateMascotPreview()">
+                    <option value="round">まあるいクラウド型</option>
+                    <option value="ears">ちょこんと猫耳型</option>
+                </select>
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeMascotModal()">閉じる</button>
+                <button class="btn-save" onclick="saveMascotCustomization()">この相棒にする</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================
+         MODAL 2: 設定モーダル
+         ================================================================= -->
+    <div class="modal-overlay" id="settingsModal">
+        <div class="modal">
+            <h3><i class="fas fa-sliders-h"></i> アプリ設定</h3>
+
+            <label style="font-size:13px; font-weight:800;">🔑 Gemini APIキー (AI評価・解説・ロールプレイ用)</label>
+            <input type="password" id="apiKeyInput" placeholder="AIzaSy...">
+
+            <label style="font-size:13px; font-weight:800;">💬 ChatGPT連携用URL (任意)</label>
+            <input type="text" id="gptsUrlInput" placeholder="https://chatgpt.com/...">
+
+            <label style="font-size:13px; font-weight:800;">🎙️ ロールプレイの音声待ち時間</label>
+            <select id="silenceLimitSelect">
+                <option value="3">3秒（標準）</option>
+                <option value="4" selected>4秒（ゆっくり考えながら話す）</option>
+                <option value="6">6秒（長めに待つ・手動送信メイン）</option>
+            </select>
+
+            <label style="font-size:13px; font-weight:800;">🔊 英語の読み上げ音声</label>
+            <select id="voiceSelect">
+                <option value="">自動選択 (おすすめの高音質)</option>
+            </select>
+
+            <div id="premiumLockSection" style="background:#fffbeb; border:1px solid #fde68a; padding:14px; border-radius:14px; margin-top:8px;">
+                <label style="font-size:13px; font-weight:800; color:#b45309;">🔑 プレミアム版パスワード</label>
+                <div style="display:flex; gap:8px; margin-top:6px;">
+                    <input type="text" id="premiumPasswordInput" placeholder="パスワードを入力" style="margin:0; flex:1;">
+                    <button onclick="checkPremiumPassword()" style="background:#f59e0b; color:#fff; border:none; padding:0 16px; border-radius:10px; font-weight:800; cursor:pointer;">解除</button>
+                </div>
+            </div>
+
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeSettings()">キャンセル</button>
+                <button class="btn-save" onclick="saveSettings()">保存</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- =================================================================
+         MODAL 3: 自作例文の追加・編集モーダル
+         ================================================================= -->
+    <div class="modal-overlay" id="addSentenceModal">
+        <div class="modal">
+            <h3 id="modalTitleText"><i class="fas fa-plus-circle"></i> 自作の例文を追加</h3>
+            <label style="font-size:12px; font-weight:800;">英文 <span style="color:red">*</span></label>
+            <textarea id="customEnglishInput" rows="2" placeholder="例: Why don't we grab some coffee?"></textarea>
+
+            <label style="font-size:12px; font-weight:800;">日本語訳 <span style="color:red">*</span></label>
+            <input type="text" id="customJapaneseInput" placeholder="例: コーヒーでも飲みに行きませんか？">
+
+            <label style="font-size:12px; font-weight:800;">ヒント（任意）</label>
+            <input type="text" id="customHintInput" placeholder="例: Why don't we ~ ?">
+
+            <label style="font-size:12px; font-weight:800;">メモ・解説（任意）</label>
+            <textarea id="customNotesInput" rows="2" placeholder="覚えたいポイントなどを記入"></textarea>
+
+            <div class="modal-btns">
+                <button class="btn-cancel" onclick="closeAddSentenceModal()">キャンセル</button>
+                <button class="btn-save" id="modalSaveBtnText" onclick="saveCustomSentence()">追加する</button>
+            </div>
+        </div>
+    </div>
+
+    <script src="data.js"></script>
+    <script>
+        // =====================================================================
+        // 1. 状態管理 (State & Gamification XP / Missions)
+        // =====================================================================
+        let currentChapterIdx = 0;
+        let currentSectionIdx = 0;
+        let currentItemIdx = 0;
+        let activePage = 'home';
+
+        const FREE_CHAPTER_LIMIT = 3;
+        let isPremium = localStorage.getItem('english_app_premium') === 'true';
+
+        // 5ページ切り替え関数
+        function switchPage(pageName) {
+            activePage = pageName;
+            document.body.setAttribute('data-page', pageName);
+
+            document.querySelectorAll('.app-page').forEach(p => p.classList.remove('active'));
+            const target = document.getElementById('page-' + pageName);
+            if (target) target.classList.add('active');
+
+            document.querySelectorAll('.tab-btn').forEach(btn => {
+                btn.classList.toggle('active', btn.dataset.tab === pageName);
+            });
+
+            // ロールプレイページを開いたとき、まだ会話が始まっていなければ初期案内を更新
+            if (pageName === 'roleplay') {
+                prepareRoleplayPreview();
+            }
+            // 学習記録・復習ページを開いたとき、統計＆ポッドキャスト＆保存一覧を更新
+            if (pageName === 'progress') {
+                renderProgressDashboard();
+            }
+
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // =====================================================================
+        // 2. 相棒キャラクター描画＆カスタマイズ (Inko風ぷるぷるゼリー + 3Dキャラ)
+        // =====================================================================
+        function getMascotConfig() {
+            const raw = localStorage.getItem('inko_mascot_config');
+            if (raw) {
+                try { return JSON.parse(raw); } catch(e) {}
+            }
+            return {
+                type: 'inko-blob',
+                color: 'linear-gradient(135deg, #a5f3fc 0%, #38bdf8 55%, #0284c7 100%)',
+                acc: '',
+                shape: 'round'
+            };
+        }
+
+        // 目の位置・頭の位置にジャストフィットする大きめ3D風SVGアクセサリー生成
+        function getBlobAccessoryHtml(acc) {
+            if (!acc) return { headHtml: '', eyesHtml: '' };
+
+            // 1. サングラス（左右の目の中心 x=34, x=68 に100%重なるウェリントン型・Inko Screenshot 04風）
+            if (acc === '🕶️') {
+                return {
+                    headHtml: '',
+                    eyesHtml: `
+                        <div class="blob-accessory-eyes">
+                            <svg viewBox="0 0 102 40" width="102" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <!-- 左右のツルとブリッジ -->
+                                <path d="M4 14 L18 15 M84 15 L98 14" stroke="#111827" stroke-width="4" stroke-linecap="round"/>
+                                <path d="M44 15 Q51 12 58 15" stroke="#111827" stroke-width="4.5" stroke-linecap="round"/>
+                                <!-- 左レンズ (中心 x=31, y=20) -->
+                                <rect x="14" y="7" width="33" height="25" rx="7" fill="#0f172a" fill-opacity="0.86" stroke="#111827" stroke-width="3.5"/>
+                                <path d="M19 11 L26 11 L20 24 L17 24 Z" fill="rgba(255,255,255,0.28)"/>
+                                <!-- 右レンズ (中心 x=71, y=20) -->
+                                <rect x="55" y="7" width="33" height="25" rx="7" fill="#0f172a" fill-opacity="0.86" stroke="#111827" stroke-width="3.5"/>
+                                <path d="M60 11 L67 11 L61 24 L58 24 Z" fill="rgba(255,255,255,0.28)"/>
+                            </svg>
+                        </div>`
+                };
+            }
+
+            // 2. 丸メガネ（左右の目の中心に100%重なるボストン丸眼鏡・Inko Screenshot 06風）
+            if (acc === '👓') {
+                return {
+                    headHtml: '',
+                    eyesHtml: `
+                        <div class="blob-accessory-eyes">
+                            <svg viewBox="0 0 102 40" width="102" height="40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M5 18 L16 19 M86 19 L97 18" stroke="#1e293b" stroke-width="3.2" stroke-linecap="round"/>
+                                <path d="M45 19 Q51 15 57 19" stroke="#1e293b" stroke-width="3.2" stroke-linecap="round"/>
+                                <circle cx="31" cy="20" r="14.5" fill="rgba(255,255,255,0.18)" stroke="#1e293b" stroke-width="3.4"/>
+                                <path d="M23 12 A10 10 0 0 1 33 10" stroke="rgba(255,255,255,0.65)" stroke-width="2" stroke-linecap="round"/>
+                                <circle cx="71" cy="20" r="14.5" fill="rgba(255,255,255,0.18)" stroke="#1e293b" stroke-width="3.4"/>
+                                <path d="M63 12 A10 10 0 0 1 73 10" stroke="rgba(255,255,255,0.65)" stroke-width="2" stroke-linecap="round"/>
+                            </svg>
+                        </div>`
+                };
+            }
+
+            // 3. ぽんぽんニット帽（Inko Screenshot 04 / 06風）
+            if (acc === '🧶') {
+                return {
+                    eyesHtml: '',
+                    headHtml: `
+                        <div class="blob-accessory-head">
+                            <svg viewBox="0 0 88 52" width="84" height="50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="44" cy="10" r="8" fill="#f8fafc" stroke="#cbd5e1" stroke-width="1.5"/>
+                                <path d="M18 42 C18 22 28 14 44 14 C60 14 70 22 70 42 Z" fill="#60a5fa" stroke="#2563eb" stroke-width="2"/>
+                                <rect x="14" y="36" width="60" height="12" rx="6" fill="#f1f5f9" stroke="#cbd5e1" stroke-width="2"/>
+                                <path d="M26 36 V48 M38 36 V48 M50 36 V48 M62 36 V48" stroke="#cbd5e1" stroke-width="2"/>
+                            </svg>
+                        </div>`
+                };
+            }
+
+            // 4. 赤白ベースボールキャップ（Inko Screenshot 06風）
+            if (acc === '🧢') {
+                return {
+                    eyesHtml: '',
+                    headHtml: `
+                        <div class="blob-accessory-head">
+                            <svg viewBox="0 0 88 52" width="86" height="50" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <circle cx="44" cy="11" r="4" fill="#dc2626"/>
+                                <path d="M16 40 C16 20 28 12 44 12 C60 12 72 20 72 40 Z" fill="#ef4444" stroke="#b91c1c" stroke-width="2"/>
+                                <path d="M30 40 C30 22 36 14 44 14 C52 14 58 22 58 40 Z" fill="#ffffff"/>
+                                <path d="M12 39 C26 35 62 35 82 42 C84 45 76 48 64 46 C46 43 24 43 12 39 Z" fill="#dc2626" stroke="#991b1b" stroke-width="1.8"/>
+                            </svg>
+                        </div>`
+                };
+            }
+
+            // 5. ゴールド王冠（Inko Screenshot 06風）
+            if (acc === '👑') {
+                return {
+                    eyesHtml: '',
+                    headHtml: `
+                        <div class="blob-accessory-head">
+                            <svg viewBox="0 0 88 52" width="82" height="48" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M16 44 L12 18 L30 30 L44 12 L58 30 L76 18 L72 44 Z" fill="url(#crownGrad)" stroke="#b45309" stroke-width="2.2" stroke-linejoin="round"/>
+                                <rect x="15" y="41" width="58" height="7" rx="3.5" fill="#f59e0b" stroke="#b45309" stroke-width="2"/>
+                                <circle cx="12" cy="16" r="3.5" fill="#fef08a" stroke="#b45309" stroke-width="1.5"/>
+                                <circle cx="44" cy="10" r="4" fill="#fef08a" stroke="#b45309" stroke-width="1.5"/>
+                                <circle cx="76" cy="16" r="3.5" fill="#fef08a" stroke="#b45309" stroke-width="1.5"/>
+                                <circle cx="44" cy="33" r="3.5" fill="#ef4444"/>
+                                <circle cx="28" cy="35" r="2.5" fill="#3b82f6"/>
+                                <circle cx="60" cy="35" r="2.5" fill="#3b82f6"/>
+                                <defs>
+                                    <linearGradient id="crownGrad" x1="44" y1="12" x2="44" y2="46" gradientUnits="userSpaceOnUse">
+                                        <stop offset="0%" stop-color="#fde047"/>
+                                        <stop offset="100%" stop-color="#f59e0b"/>
+                                    </linearGradient>
+                                </defs>
+                            </svg>
+                        </div>`
+                };
+            }
+
+            // 6. 大きなピンクリボン
+            if (acc === '🎀') {
+                return {
+                    eyesHtml: '',
+                    headHtml: `
+                        <div class="blob-accessory-head">
+                            <svg viewBox="0 0 88 52" width="80" height="46" fill="none" xmlns="http://www.w3.org/2000/svg">
+                                <path d="M44 30 L16 14 C10 22 10 38 16 44 L44 30 Z" fill="#f43f5e" stroke="#be123c" stroke-width="2.2" stroke-linejoin="round"/>
+                                <path d="M44 30 L72 14 C78 22 78 38 72 44 L44 30 Z" fill="#f43f5e" stroke="#be123c" stroke-width="2.2" stroke-linejoin="round"/>
+                                <circle cx="44" cy="30" r="8" fill="#fb7185" stroke="#be123c" stroke-width="2.2"/>
+                            </svg>
+                        </div>`
+                };
+            }
+
+            return { headHtml: '', eyesHtml: '' };
+        }
+
+        function buildMascotMarkup(cfg, isMainStage = false) {
+            if (cfg.type === 'inko-blob') {
+                const shapeClass = cfg.shape === 'ears' ? 'shape-ears' : '';
+                const { headHtml, eyesHtml } = getBlobAccessoryHtml(cfg.acc);
+                const idAttr = isMainStage ? 'id="activeInkoBlob"' : '';
+                return `
+                    <div class="inko-blob ${shapeClass}" ${idAttr} style="background:${cfg.color};">
+                        ${headHtml}
+                        <div class="blob-eyes">
+                            <div class="blob-eye"></div>
+                            <div class="blob-eye"></div>
+                            ${eyesHtml}
+                        </div>
+                        <div class="blob-mouth"></div>
+                    </div>
+                `;
+            } else {
+                const fileMap = {
+                    'alien-blue': 'mascots/alien-blue.png',
+                    'jelly-blue': 'mascots/jelly-blue.png',
+                    'jelly-pink': 'mascots/jelly-pink.png',
+                    'sprout-pink': 'mascots/sprout-pink.png',
+                    'star-yellow': 'mascots/star-yellow.png',
+                    'cat': 'mascots/cat.png'
+                };
+                const imgSrc = fileMap[cfg.type] || 'mascots/alien-blue.png';
+                return `<img src="${imgSrc}" class="mascot-img" alt="Mascot">`;
+            }
+        }
+
+        function renderHomeMascot() {
+            const cfg = getMascotConfig();
+            const slot = document.getElementById('homeMascotSlot');
+            if (!slot) return;
+            slot.innerHTML = buildMascotMarkup(cfg, true);
+        }
+
+        const MASCOT_GREETINGS = [
+            "祐一さん、いい調子！今日も1分だけ声に出して練習してみよう✨",
+            "英語に詰まったら、ロールプレイでは日本語を混ぜて話しても大丈夫だよ😊",
+            "ドリル画面で英単語を1つずつタップすると、その単語だけの発音が聞けるよ🔊",
+            "気になるフレーズは「フレーズを保存」しておくと、あとでまとめて復習できるよ⭐"
+        ];
+        let greetingIdx = 0;
+        let happyBounceTimer = null;
+        let previewBounceTimer = null;
+
+        function playMascotEntranceBounce(slotEl, isPreview = false) {
+            if (!slotEl) return;
+            slotEl.classList.remove('mascot-happy');
+            void slotEl.offsetWidth;
+            slotEl.classList.add('mascot-happy');
+            if (isPreview) {
+                if (previewBounceTimer) clearTimeout(previewBounceTimer);
+                previewBounceTimer = setTimeout(() => {
+                    slotEl.classList.remove('mascot-happy');
+                }, 1500);
+            } else {
+                if (happyBounceTimer) clearTimeout(happyBounceTimer);
+                happyBounceTimer = setTimeout(() => {
+                    slotEl.classList.remove('mascot-happy');
+                }, 1500);
+            }
+        }
+
+        function triggerMascotGreeting() {
+            greetingIdx = (greetingIdx + 1) % MASCOT_GREETINGS.length;
+            const bubble = document.getElementById('homeSpeechBubble');
+            if (bubble) bubble.innerText = MASCOT_GREETINGS[greetingIdx];
+            const slot = document.getElementById('homeMascotSlot');
+            playMascotEntranceBounce(slot, false);
+        }
+
+        function getDraftMascotConfigFromModal() {
+            const type = document.getElementById('mascotTypeSelect').value;
+            const activeColorEl = document.querySelector('#blobColorSwatches .color-swatch.active');
+            const activeAccEl = document.querySelector('#blobAccSwatches .acc-chip.active');
+            const shape = document.getElementById('blobShapeSelect').value;
+            return {
+                type,
+                color: activeColorEl ? activeColorEl.dataset.color : 'linear-gradient(135deg, #a5f3fc 0%, #38bdf8 55%, #0284c7 100%)',
+                acc: activeAccEl ? activeAccEl.dataset.acc : '',
+                shape
+            };
+        }
+
+        function openMascotModal() {
+            const cfg = getMascotConfig();
+            document.getElementById('mascotTypeSelect').value = cfg.type;
+            document.getElementById('blobShapeSelect').value = cfg.shape || 'round';
+            document.querySelectorAll('#blobColorSwatches .color-swatch').forEach(s => {
+                s.classList.toggle('active', s.dataset.color === cfg.color);
+            });
+            document.querySelectorAll('#blobAccSwatches .acc-chip').forEach(c => {
+                c.classList.toggle('active', c.dataset.acc === (cfg.acc || ''));
+            });
+            updateMascotPreview();
+            document.getElementById('mascotModal').style.display = 'flex';
+        }
+        function closeMascotModal() {
+            document.getElementById('mascotModal').style.display = 'none';
+        }
+        function updateMascotPreview() {
+            const draft = getDraftMascotConfigFromModal();
+            document.getElementById('inkoBlobCustomOptions').style.display = (draft.type === 'inko-blob') ? 'block' : 'none';
+            const previewSlot = document.getElementById('modalMascotPreviewSlot');
+            if (previewSlot) {
+                previewSlot.innerHTML = buildMascotMarkup(draft, false);
+                playMascotEntranceBounce(previewSlot, true);
+            }
+        }
+        function selectBlobColor(el) {
+            document.querySelectorAll('#blobColorSwatches .color-swatch').forEach(s => s.classList.remove('active'));
+            el.classList.add('active');
+            updateMascotPreview();
+        }
+        function selectBlobAcc(el) {
+            document.querySelectorAll('#blobAccSwatches .acc-chip').forEach(c => c.classList.remove('active'));
+            el.classList.add('active');
+            updateMascotPreview();
+        }
+        function saveMascotCustomization() {
+            const cfg = getDraftMascotConfigFromModal();
+            localStorage.setItem('inko_mascot_config', JSON.stringify(cfg));
+            renderHomeMascot();
+            closeMascotModal();
+            triggerMascotGreeting();
+        }
+
+        // =====================================================================
+        // 3. メイン描画 (renderApp) ＆ 単語別チップ生成
+        // =====================================================================
+        function renderApp() {
+            if (typeof grammarData === 'undefined') {
+                document.getElementById('homeEnglishPreview').innerText = "データの読み込みに失敗しました。";
+                return;
+            }
+
+            const chapter = grammarData.chapters[currentChapterIdx];
+            const section = chapter.sections[currentSectionIdx];
+            const item = section.items[currentItemIdx];
+
+            // 全体の進捗計算
+            let globalTotalItems = 0;
+            let globalCurrentIndex = 0;
+            let foundCurrent = false;
+            grammarData.chapters.forEach((c, cIdx) => {
+                c.sections.forEach((s, sIdx) => {
+                    s.items.forEach((itm, iIdx) => {
+                        globalTotalItems++;
+                        if (!foundCurrent && cIdx === currentChapterIdx && sIdx === currentSectionIdx && iIdx === currentItemIdx) {
+                            globalCurrentIndex = globalTotalItems;
+                            foundCurrent = true;
+                        }
+                    });
+                });
+            });
+
+            // プレミアムロック判定
+            if (!isPremium && currentChapterIdx >= FREE_CHAPTER_LIMIT) {
+                const lockMsgEn = "🔒 プレミアム限定コンテンツです";
+                const lockMsgJa = "設定（右上ボタン）からプレミアム版パスワードを入力すると解放されます。";
+                document.getElementById('homeChapterBadge').innerText = chapter.title;
+                document.getElementById('homeSectionTitle').innerText = section.title;
+                document.getElementById('homeEnglishPreview').innerText = lockMsgEn;
+                document.getElementById('homeJapanesePreview').innerText = lockMsgJa;
+                document.getElementById('englishText').innerText = lockMsgEn;
+                document.getElementById('wordChipsContainer').innerHTML = `<span class="word-chip">${lockMsgEn}</span>`;
+                document.getElementById('japaneseText').innerText = lockMsgJa;
+                return;
+            }
+
+            // ホーム画面の更新
+            document.getElementById('homeChapterBadge').innerText = chapter.title;
+            document.getElementById('homeSectionTitle').innerText = section.title;
+            document.getElementById('homeProgressBadge').innerText = `${globalCurrentIndex} / ${globalTotalItems}`;
+            document.getElementById('homeEnglishPreview').innerText = item.english;
+            document.getElementById('homeJapanesePreview').innerText = item.japanese;
+
+            // ドリル画面の更新
+            document.getElementById('englishText').innerText = item.english;
+            document.getElementById('japaneseText').innerText = item.japanese;
+            document.getElementById('progressText').innerText = `${globalCurrentIndex} / ${globalTotalItems}`;
+            renderWordChips(item.english);
+
+            // スコアパネルをリセット
+            document.getElementById('feedbackArea').style.display = 'none';
+
+            // AIコーチ画面の更新
+            document.getElementById('coachEnglishTarget').innerText = item.english;
+            document.getElementById('coachJapaneseTarget').innerText = item.japanese;
+            document.getElementById('hintText').style.display = item.hint ? 'block' : 'none';
+            document.getElementById('hintText').innerText = item.hint ? `💡 ヒント: ${item.hint}` : '';
+            document.getElementById('notesText').innerText = item.notes || section.explanation || "この文の特別な解説はありません。AIコーチボタンを押すと詳しく解説してくれます！";
+            document.getElementById('aiPopup').style.display = 'none';
+
+            // 自作例文ボタン表示切り替え
+            document.getElementById('customEditBtns').style.display = item.isCustom ? 'block' : 'none';
+
+            // ナビゲーションボタン有効・無効
+            const isFirst = (currentItemIdx === 0 && currentSectionIdx === 0 && currentChapterIdx === 0);
+            const isLast = (
+                currentChapterIdx === grammarData.chapters.length - 1 &&
+                currentSectionIdx === chapter.sections.length - 1 &&
+                currentItemIdx === section.items.length - 1
+            );
+            document.getElementById('prevBtn').disabled = isFirst;
+            document.getElementById('nextBtn').disabled = isLast;
+            document.getElementById('homePrevBtn').disabled = isFirst;
+            document.getElementById('homeNextBtn').disabled = isLast;
+
+            loadUserProgress(item.id);
+            updateMissionsUI();
+            buildTocMenu();
+            if (activePage === 'roleplay') prepareRoleplayPreview();
+            if (activePage === 'progress') renderProgressDashboard();
+        }
+
+        // 英単語ごとにタップで個別発音＆色分けハイライトできるチップを生成
+        function renderWordChips(sentence, wordStatuses = null) {
+            const container = document.getElementById('wordChipsContainer');
+            container.innerHTML = '';
+            const tokens = sentence.split(/\s+/);
+            tokens.forEach((tok, idx) => {
+                const span = document.createElement('span');
+                span.className = 'word-chip';
+                if (wordStatuses && wordStatuses[idx]) {
+                    span.classList.add('word-' + wordStatuses[idx]);
+                }
+                span.innerText = tok;
+                span.title = 'タップしてこの単語の発音を聞く';
+                span.onclick = () => speakSingleWord(tok, span);
+                container.appendChild(span);
+            });
+        }
+
+        function speakSingleWord(word, chipEl = null) {
+            const clean = word.replace(/[^\w']/g, '');
+            if (!clean || !('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            document.querySelectorAll('.word-chip.speaking-word').forEach(el => el.classList.remove('speaking-word'));
+            if (chipEl) chipEl.classList.add('speaking-word');
+            const utt = new SpeechSynthesisUtterance(clean);
+            utt.lang = 'en-US';
+            utt.rate = 0.86;
+            applySelectedVoice(utt);
+            utt.onend = () => {
+                if (chipEl) chipEl.classList.remove('speaking-word');
+            };
+            setTimeout(() => {
+                if (chipEl) chipEl.classList.remove('speaking-word');
+            }, 1400);
+            window.speechSynthesis.speak(utt);
+        }
+
+        // 高得点合格時のキラキラ紙吹雪（コンフェッティ）エフェクト
+        function launchCelebrationConfetti() {
+            const colors = ['#38bdf8', '#f472b6', '#facc15', '#34d399', '#a78bfa', '#fb923c'];
+            for (let i = 0; i < 34; i++) {
+                const piece = document.createElement('div');
+                piece.className = 'confetti-piece';
+                piece.style.left = Math.round(10 + Math.random() * 80) + 'vw';
+                piece.style.top = '-16px';
+                piece.style.background = colors[i % colors.length];
+                piece.style.animationDelay = (Math.random() * 0.45).toFixed(2) + 's';
+                piece.style.animationDuration = (1.6 + Math.random() * 0.9).toFixed(2) + 's';
+                document.body.appendChild(piece);
+                setTimeout(() => piece.remove(), 2700);
+            }
+        }
+
+        function nextItem() {
+            const chapter = grammarData.chapters[currentChapterIdx];
+            const section = chapter.sections[currentSectionIdx];
+            if (currentItemIdx < section.items.length - 1) {
+                currentItemIdx++;
+            } else if (currentSectionIdx < chapter.sections.length - 1) {
+                currentSectionIdx++;
+                currentItemIdx = 0;
+            } else if (currentChapterIdx < grammarData.chapters.length - 1) {
+                currentChapterIdx++;
+                currentSectionIdx = 0;
+                currentItemIdx = 0;
+            }
+            renderApp();
+        }
+
+        function prevItem() {
+            if (currentItemIdx > 0) {
+                currentItemIdx--;
+            } else if (currentSectionIdx > 0) {
+                currentSectionIdx--;
+                currentItemIdx = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items.length - 1;
+            } else if (currentChapterIdx > 0) {
+                currentChapterIdx--;
+                const prevChap = grammarData.chapters[currentChapterIdx];
+                currentSectionIdx = prevChap.sections.length - 1;
+                currentItemIdx = prevChap.sections[currentSectionIdx].items.length - 1;
+            }
+            renderApp();
+        }
+
+        // =====================================================================
+        // 4. 発音認識 ＆ Inko風 単語ごと色分け採点・スコアリング
+        // =====================================================================
+        let recognition = null;
+        let isRecording = false;
+
+        function initSpeechRecognition() {
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!window.SpeechRecognition) {
+                document.getElementById('micBtn').style.display = 'none';
+                return;
+            }
+            recognition = new window.SpeechRecognition();
+            recognition.lang = 'en-US';
+            recognition.interimResults = false;
+            recognition.maxAlternatives = 1;
+
+            recognition.onstart = function() {
+                isRecording = true;
+                const btn = document.getElementById('micBtn');
+                btn.classList.add('recording');
+                document.getElementById('micBtnLabel').innerText = '聞き取り中...';
+                document.getElementById('drillSpeechBubble').innerText = 'しっかり聞いているよ！ゆっくり話してみてね👂';
+            };
+
+            recognition.onresult = function(event) {
+                const transcript = event.results[0][0].transcript;
+                evaluateSpeechInkoStyle(transcript);
+            };
+
+            recognition.onerror = function(event) {
+                stopRecording();
+                document.getElementById('drillSpeechBubble').innerText = 'うまく聞き取れなかったみたい。もう一度マイクを押してみてね！';
+            };
+
+            recognition.onend = function() {
+                stopRecording();
+            };
+        }
+
+        function toggleRecording() {
+            if (!recognition) {
+                alert("お使いのブラウザは音声認識に対応していません。(Chrome / Edge / Safari推奨)");
+                return;
+            }
+            if (isRecording) recognition.stop();
+            else recognition.start();
+        }
+
+        function stopRecording() {
+            isRecording = false;
+            const btn = document.getElementById('micBtn');
+            if (btn) btn.classList.remove('recording');
+            const lbl = document.getElementById('micBtnLabel');
+            if (lbl) lbl.innerText = 'もう一度発音';
+        }
+
+        // 単語ごとの一致度を計算し、色分け＋3指標スコアを表示
+        async function evaluateSpeechInkoStyle(transcript) {
+            const targetText = document.getElementById('englishText').innerText;
+            const japaneseText = document.getElementById('japaneseText').innerText;
+
+            const targetTokens = targetText.split(/\s+/);
+            const spokenWords = transcript.toLowerCase().replace(/[^\w\s']/g, '').split(/\s+/).filter(Boolean);
+
+            let exactMatches = 0;
+            let closeMatches = 0;
+            const statuses = targetTokens.map(tok => {
+                const cleanTok = tok.toLowerCase().replace(/[^\w']/g, '');
+                if (!cleanTok) return 'good';
+                if (spokenWords.includes(cleanTok)) {
+                    exactMatches++;
+                    return 'good';
+                }
+                // 部分一致または先頭3文字一致なら「惜しい(close)」
+                const partial = spokenWords.some(sw => sw.startsWith(cleanTok.slice(0, 3)) || cleanTok.startsWith(sw.slice(0, 3)));
+                if (partial) {
+                    closeMatches++;
+                    return 'close';
+                }
+                return 'miss';
+            });
+
+            renderWordChips(targetText, statuses);
+
+            const total = Math.max(targetTokens.length, 1);
+            const accuracy = Math.min(100, Math.round(((exactMatches + closeMatches * 0.6) / total) * 100));
+            const completeness = Math.min(100, Math.round((spokenWords.length / total) * 100));
+            const fluency = Math.min(100, Math.max(60, Math.round((accuracy * 0.7) + (completeness * 0.3))));
+            const overallScore = Math.round((accuracy * 0.5) + (fluency * 0.25) + (completeness * 0.25));
+
+            // スコアUIを表示
+            const panel = document.getElementById('feedbackArea');
+            panel.style.display = 'block';
+            document.getElementById('transcribedText').innerText = `"${transcript}"`;
+            document.getElementById('scoreNumber').innerText = overallScore;
+            const ringColor = overallScore >= 80 ? '#22c55e' : (overallScore >= 55 ? '#eab308' : '#ef4444');
+            const ring = document.getElementById('scoreRing');
+            ring.style.background = `conic-gradient(${ringColor} ${overallScore}%, #e2e8f0 0)`;
+
+            document.getElementById('barAccuracy').style.width = accuracy + '%';
+            document.getElementById('valAccuracy').innerText = accuracy;
+            document.getElementById('barFluency').style.width = fluency + '%';
+            document.getElementById('valFluency').innerText = fluency;
+            document.getElementById('barComplete').style.width = completeness + '%';
+            document.getElementById('valComplete').innerText = completeness;
+
+            const nextCtaBtn = document.getElementById('nextDrillCtaBtn');
+            if (overallScore >= 80) {
+                document.getElementById('scoreTitleText').innerText = '素晴らしい発音です！🎉';
+                document.getElementById('drillSpeechBubble').innerText = `やったね祐一さん！${overallScore}点！緑色の単語がバッチリ聞き取れたよ⭐`;
+                const fig = document.getElementById('drillMascotFig');
+                playMascotEntranceBounce(fig, false);
+                launchCelebrationConfetti();
+                if (nextCtaBtn) nextCtaBtn.style.display = 'inline-flex';
+            } else {
+                document.getElementById('scoreTitleText').innerText = 'いい調子！あと少し！✨';
+                document.getElementById('drillSpeechBubble').innerText = '黄色や赤色の単語をタップしてお手本を聞いてから、もう一度挑戦してみてね！';
+                if (nextCtaBtn) nextCtaBtn.style.display = 'none';
+            }
+
+            // ミッション達成＆XP加算
+            markMissionCompleted('drill', 20);
+
+            // Gemini APIキーがあれば一言アドバイスも取得
+            const resultDiv = document.getElementById('evaluationResult');
+            const apiKey = localStorage.getItem('gemini_api_key');
+            if (apiKey) {
+                resultDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AIコーチが発音アドバイスを作成中...';
+                try {
+                    const data = await fetchWithRetry(apiKey, {
+                        contents: [{
+                            parts: [{
+                                text: `英語の発音練習の評価をしてください。\nお手本: "${targetText}" (${japaneseText})\n生徒の発話: "${transcript}"\nスコア: ${overallScore}点\n2行以内で明るく褒めつつ、よりネイティブらしく発音するコツ（リンキングやアクセントなど）を1つだけ日本語で教えてください。`
+                            }]
+                        }]
+                    });
+                    resultDiv.innerHTML = data.candidates[0].content.parts[0].text.replace(/\n/g, '<br>');
+                } catch (e) {
+                    resultDiv.innerHTML = overallScore >= 80
+                        ? '🌟 重要な単語がしっかり発音できています！この調子で進めましょう。'
+                        : `💡 お手本「${targetText}」のリズムを意識してもう一度声に出してみましょう！`;
+                }
+            } else {
+                resultDiv.innerHTML = overallScore >= 80
+                    ? '🌟 重要な単語がしっかり発音できています！（色がついた単語をタップすると個別発音が聞けます）'
+                    : `💡 赤や黄色の単語をタップして発音を確認してみましょう！`;
+            }
+        }
+
+        // =====================================================================
+        // 5. Gemini API 通信ヘルパー ＆ AI文法コーチ (Page 3)
+        // =====================================================================
+        const GEMINI_MODELS = ['gemini-2.5-flash', 'gemini-2.5-flash-lite'];
+        const MAX_RETRIES = 4;
+        let tutorChatContexts = {};
+
+        async function fetchWithRetry(apiKey, bodyPayload, statusCallback) {
+            let lastError = null;
+            let currentModelIdx = 0;
+            for (let attempt = 0; attempt < MAX_RETRIES; attempt++) {
+                const model = GEMINI_MODELS[currentModelIdx];
+                const url = `https://generativelanguage.googleapis.com/v1beta/models/${model}:generateContent?key=${apiKey}`;
+                if (attempt > 0) {
+                    if (statusCallback) statusCallback('⏳ 再接続中...');
+                    await new Promise(r => setTimeout(r, 1800));
+                }
+                try {
+                    const response = await fetch(url, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(bodyPayload)
+                    });
+                    if (response.ok) return await response.json();
+                    if (response.status === 429 || response.status === 503) {
+                        if (currentModelIdx < GEMINI_MODELS.length - 1) currentModelIdx++;
+                        lastError = new Error(`HTTP ${response.status}`);
+                        continue;
+                    }
+                    throw new Error(`HTTP ${response.status}`);
+                } catch (err) {
+                    lastError = err;
+                }
+            }
+            throw new Error('現在AIサーバーが混雑しています。少し待ってから再度お試しください。');
+        }
+
+        async function fetchAIExplanation() {
+            const popup = document.getElementById('aiPopup');
+            const historyDiv = document.getElementById('tutorChatHistory');
+            const currentItem = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+
+            popup.style.display = 'block';
+            markMissionCompleted('coach', 10);
+
+            if (tutorChatContexts[currentItem.id]) {
+                renderTutorChat();
+                return;
+            }
+
+            const apiKey = localStorage.getItem('gemini_api_key');
+            if (!apiKey) {
+                alert("AIコーチ機能を使うには、右上の設定ボタンからGemini APIキーを入力してください。");
+                openSettings();
+                return;
+            }
+
+            historyDiv.innerHTML = '<div class="chat-msg ai"><i class="fas fa-spinner fa-spin"></i> AIコーチが解説を作成中...</div>';
+            const prompt = `あなたは優しくて博識な英語コーチです。以下の英文の文法構造・コアイメージ・ネイティブが使うときの気持ちを、わかりやすく3〜4文で解説してください。\n\n英文: "${currentItem.english}"\n日本語訳: "${currentItem.japanese}"\n\n要点は <strong>タグで強調し、親しみやすい「です・ます」調で出力してください。`;
+            const initialHistory = [{ role: 'user', parts: [{ text: prompt }] }];
+
+            try {
+                const data = await fetchWithRetry(apiKey, { contents: initialHistory });
+                const reply = data.candidates[0].content.parts[0].text;
+                initialHistory.push({ role: 'model', parts: [{ text: reply }] });
+                tutorChatContexts[currentItem.id] = initialHistory;
+                renderTutorChat();
+            } catch (e) {
+                historyDiv.innerHTML = `<div class="chat-msg ai">${e.message}</div>`;
+            }
+        }
+
+        function renderTutorChat() {
+            const currentItem = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+            const historyDiv = document.getElementById('tutorChatHistory');
+            const msgs = tutorChatContexts[currentItem.id] || [];
+            historyDiv.innerHTML = '';
+            for (let i = 1; i < msgs.length; i++) {
+                const m = msgs[i];
+                const div = document.createElement('div');
+                div.className = 'chat-msg ' + (m.role === 'user' ? 'user' : 'ai');
+                div.innerHTML = m.parts[0].text.replace(/\n/g, '<br>');
+                historyDiv.appendChild(div);
+            }
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+        }
+
+        async function sendTutorQuestion(customQuestionText = null) {
+            const currentItem = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+            const input = document.getElementById('tutorChatInput');
+            const q = (customQuestionText !== null ? customQuestionText : input.value).trim();
+            if (!q) return;
+
+            const apiKey = localStorage.getItem('gemini_api_key');
+            if (!apiKey) {
+                alert("AIコーチ機能を使うには、右上の設定ボタンからGemini APIキーを入力してください。");
+                openSettings();
+                return;
+            }
+
+            const popup = document.getElementById('aiPopup');
+            popup.style.display = 'block';
+            markMissionCompleted('coach', 10);
+
+            if (!tutorChatContexts[currentItem.id]) {
+                tutorChatContexts[currentItem.id] = [{
+                    role: 'user',
+                    parts: [{
+                        text: `あなたは優しくて博識な英語コーチです。現在のターゲット英文は "${currentItem.english}"（日本語訳: "${currentItem.japanese}"）です。要点は <strong>タグで強調し、親しみやすい「です・ます」調で簡潔に答えてください。`
+                    }]
+                }];
+            }
+
+            if (customQuestionText === null) input.value = '';
+            tutorChatContexts[currentItem.id].push({ role: 'user', parts: [{ text: q }] });
+            renderTutorChat();
+
+            const historyDiv = document.getElementById('tutorChatHistory');
+            const loadingDiv = document.createElement('div');
+            loadingDiv.className = 'chat-msg ai';
+            loadingDiv.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AIコーチが回答を作成中...';
+            historyDiv.appendChild(loadingDiv);
+            historyDiv.scrollTop = historyDiv.scrollHeight;
+
+            try {
+                const data = await fetchWithRetry(apiKey, { contents: tutorChatContexts[currentItem.id] });
+                const reply = data.candidates[0].content.parts[0].text;
+                tutorChatContexts[currentItem.id].push({ role: 'model', parts: [{ text: reply }] });
+                renderTutorChat();
+            } catch (e) {
+                loadingDiv.innerHTML = e.message;
+            }
+        }
+
+        function askQuickTutorQuestion(qText) {
+            sendTutorQuestion(qText);
+        }
+
+        // =====================================================================
+        // 6. 60秒AIロールプレイ通話 ＆ 自動生成レッスンノート (Page 4)
+        // =====================================================================
+        let chatHistory = [];
+        let userUtterancesLog = [];
+        let chatRecognition = null;
+        let isChatRecording = false;
+        let chatSilenceTimer = null;
+        let chatLatestText = '';
+        let hasDispatchedSpeech = false;
+        let roleplayTimerInterval = null;
+        let roleplaySecondsLeft = 60;
+
+        function prepareRoleplayPreview() {
+            const item = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+            if (chatHistory.length === 0) {
+                document.getElementById('callAiEnglish').innerText = `"${item.english}"`;
+                document.getElementById('callAiJapanese').innerText = `この表現（${item.japanese}）を使って60秒間楽しくおしゃべりしましょう！下の「新しい会話を始める」またはマイクボタンでスタート！`;
+                document.getElementById('trySayingText').innerText = item.english;
+            }
+        }
+
+        function toggleTrySayingBlur() {
+            const el = document.getElementById('trySayingText');
+            el.classList.toggle('blurred');
+        }
+
+        function startRoleplayCountdown() {
+            if (roleplayTimerInterval) clearInterval(roleplayTimerInterval);
+            roleplaySecondsLeft = 60;
+            updateCallTimerUI();
+            roleplayTimerInterval = setInterval(() => {
+                roleplaySecondsLeft--;
+                updateCallTimerUI();
+                if (roleplaySecondsLeft <= 0) {
+                    clearInterval(roleplayTimerInterval);
+                    roleplayTimerInterval = null;
+                    finishRoleplayAndBuildNote();
+                }
+            }, 1000);
+        }
+
+        function updateCallTimerUI() {
+            const sec = Math.max(0, roleplaySecondsLeft);
+            const mm = String(Math.floor(sec / 60)).padStart(2, '0');
+            const ss = String(sec % 60).padStart(2, '0');
+            document.getElementById('callTimerBadge').innerText = `⏱️ ${mm}:${ss}`;
+            const pct = Math.round((sec / 60) * 100);
+            document.getElementById('callAvatarRing').style.setProperty('--call-pct', pct + '%');
+        }
+
+        async function startRoleplaySession() {
+            const apiKey = localStorage.getItem('gemini_api_key');
+            if (!apiKey) {
+                alert("AIとロールプレイをするには、設定（右上ボタン）からGemini APIキーを入力してください。");
+                openSettings();
+                return;
+            }
+
+            const item = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+            const sectionTitle = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].title;
+
+            document.getElementById('lessonNoteCard').style.display = 'none';
+            document.getElementById('chatHistory').innerHTML = '';
+            userUtterancesLog = [];
+            document.getElementById('callAiEnglish').innerText = 'Thinking of a fun topic...';
+            document.getElementById('callAiJapanese').innerText = 'シチュエーションを準備しています...';
+
+            const prompt = `あなたは親しみやすい英会話パートナーです。学習者は今「${sectionTitle}」の例文 "${item.english}" (${item.japanese}) を練習中です。
+学習者がこの表現を自然に使えるように、短い1文で英語で話しかけてください。
+必ず以下のJSON形式のみで返答してください（マークダウンのバッククォートは不要）:
+{"ai_en": "英語の短い問いかけ1文", "ai_ja": "その日本語訳", "hint_en": "学習者が返答に使える英語フレーズ例（${item.english} を応用したもの）"}`;
+
+            chatHistory = [{ role: 'user', parts: [{ text: prompt }] }];
+
+            try {
+                const data = await fetchWithRetry(apiKey, { contents: chatHistory });
+                const raw = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+                let parsed = null;
+                try { parsed = JSON.parse(raw); } catch(e) {}
+
+                const aiEn = parsed?.ai_en || `Hey! Let's talk! When would you say "${item.english}"?`;
+                const aiJa = parsed?.ai_ja || `こんにちは！このフレーズを使って話してみよう！`;
+                const hintEn = parsed?.hint_en || item.english;
+
+                chatHistory.push({ role: 'model', parts: [{ text: JSON.stringify({ ai_en: aiEn, ai_ja: aiJa, hint_en: hintEn }) }] });
+
+                document.getElementById('callAiEnglish').innerText = aiEn;
+                document.getElementById('callAiJapanese').innerText = aiJa;
+                document.getElementById('trySayingText').innerText = hintEn;
+
+                appendMessage('ai', `${aiEn}\n（${aiJa}）`, true);
+                startRoleplayCountdown();
+                markMissionCompleted('roleplay', 30);
+            } catch (e) {
+                document.getElementById('callAiJapanese').innerText = e.message;
+            }
+        }
+
+        function initChatRecognition() {
+            window.SpeechRecognition = window.SpeechRecognition || window.webkitSpeechRecognition;
+            if (!window.SpeechRecognition) return;
+
+            chatRecognition = new window.SpeechRecognition();
+            chatRecognition.lang = 'en-US';
+            chatRecognition.continuous = true;
+            chatRecognition.interimResults = true;
+
+            chatRecognition.onstart = function() {
+                isChatRecording = true;
+                chatLatestText = '';
+                hasDispatchedSpeech = false;
+                document.getElementById('chatMicBtn').classList.add('recording');
+                document.getElementById('callLiveTranscript').innerText = '🎙️ 聞いています... 自分のペースでどうぞ！';
+            };
+
+            chatRecognition.onresult = function(event) {
+                if (chatSilenceTimer) clearTimeout(chatSilenceTimer);
+                let combined = '';
+                for (let i = 0; i < event.results.length; ++i) {
+                    combined += event.results[i][0].transcript + ' ';
+                }
+                chatLatestText = combined.trim();
+                document.getElementById('callLiveTranscript').innerText = `🗣️ "${chatLatestText}"`;
+
+                const silenceSec = parseInt(localStorage.getItem('speech_silence_limit') || '4');
+                chatSilenceTimer = setTimeout(() => {
+                    if (chatLatestText && !hasDispatchedSpeech) {
+                        hasDispatchedSpeech = true;
+                        chatRecognition.stop();
+                        handleUserChatMessage(chatLatestText);
+                    }
+                }, silenceSec * 1000);
+            };
+
+            chatRecognition.onerror = function() {
+                stopChatRecording();
+            };
+
+            chatRecognition.onend = function() {
+                if (chatSilenceTimer) clearTimeout(chatSilenceTimer);
+                stopChatRecording();
+                if (chatLatestText && !hasDispatchedSpeech) {
+                    hasDispatchedSpeech = true;
+                    handleUserChatMessage(chatLatestText);
+                }
+            };
+        }
+
+        let roleplayMicMode = 'tap'; // 'tap' または 'hold'
+
+        function setRoleplayMicMode(mode) {
+            roleplayMicMode = mode;
+            const tapBtn = document.getElementById('micModeTapBtn');
+            const holdBtn = document.getElementById('micModeHoldBtn');
+            const guide = document.getElementById('roleplayMicGuideText');
+            if (tapBtn) tapBtn.classList.toggle('active', mode === 'tap');
+            if (holdBtn) holdBtn.classList.toggle('active', mode === 'hold');
+            if (guide) {
+                guide.innerText = mode === 'hold'
+                    ? '🎙️【Inko式】マイクボタンを押している間だけ聞き取り、指を離すと送信されます（自分のペースで安心！）'
+                    : '🎙️ マイクを押して話し、話し終えたらもう一度押してください（日本語混じりでもOK！）';
+            }
+        }
+
+        function handleRoleplayMicClick() {
+            if (roleplayMicMode === 'tap') {
+                toggleChatRecording();
+            }
+        }
+
+        function handleRoleplayMicDown(e) {
+            if (roleplayMicMode !== 'hold') return;
+            if (e && e.cancelable) e.preventDefault();
+            if (chatHistory.length === 0) {
+                startRoleplaySession();
+                return;
+            }
+            if (!chatRecognition) initChatRecognition();
+            if (chatRecognition && !isChatRecording) {
+                chatRecognition.start();
+            }
+        }
+
+        function handleRoleplayMicUp(e) {
+            if (roleplayMicMode !== 'hold') return;
+            if (e && e.cancelable) e.preventDefault();
+            if (chatRecognition && isChatRecording) {
+                chatRecognition.stop();
+            }
+        }
+
+        function toggleChatRecording() {
+            if (chatHistory.length === 0) {
+                startRoleplaySession();
+                return;
+            }
+            if (!chatRecognition) initChatRecognition();
+            if (!chatRecognition) {
+                const manual = prompt("英語（または日本語まじり）でメッセージを入力してください:");
+                if (manual) handleUserChatMessage(manual);
+                return;
+            }
+            if (isChatRecording) {
+                chatRecognition.stop();
+            } else {
+                chatRecognition.start();
+            }
+        }
+
+        function stopChatRecording() {
+            isChatRecording = false;
+            const btn = document.getElementById('chatMicBtn');
+            if (btn) btn.classList.remove('recording');
+        }
+
+        async function handleUserChatMessage(userText) {
+            document.getElementById('callLiveTranscript').innerText = '';
+            appendMessage('user', userText);
+            userUtterancesLog.push(userText);
+
+            const apiKey = localStorage.getItem('gemini_api_key');
+            if (!apiKey) return;
+
+            const prompt = `ユーザーの発言: "${userText}"
+（※Inkoルール：会話の途中で細かいダメ出しはせず、もし日本語が混ざっていたり不自然でも意図を汲み取って会話を楽しく1〜2文で続けてください。そしてユーザーの発言をより自然なネイティブ英語に直した文を rephrase に入れてください）
+以下のJSON形式のみで返答してください:
+{"ai_en": "AIの英語返答と次の質問(1〜2文)", "ai_ja": "AIの返答の日本語訳", "hint_en": "次にユーザーが言えそうな英語の返答ヒント", "rephrase": "今回のユーザー発言のより自然なネイティブ英語表現", "rephrase_tip": "ワンポイント解説(日本語)"}`;
+
+            chatHistory.push({ role: 'user', parts: [{ text: prompt }] });
+
+            try {
+                const data = await fetchWithRetry(apiKey, { contents: chatHistory });
+                const raw = data.candidates[0].content.parts[0].text.replace(/```json|```/g, '').trim();
+                let parsed = null;
+                try { parsed = JSON.parse(raw); } catch(e) {}
+
+                const aiEn = parsed?.ai_en || "That sounds great! Tell me more about it.";
+                const aiJa = parsed?.ai_ja || "いいですね！もっと教えてください。";
+                const hintEn = parsed?.hint_en || "Actually, I really enjoy it because...";
+
+                if (parsed?.rephrase) {
+                    userUtterancesLog[userUtterancesLog.length - 1] = {
+                        user: userText,
+                        natural: parsed.rephrase,
+                        tip: parsed.rephrase_tip || "より自然なネイティブ表現です"
+                    };
+                }
+
+                document.getElementById('callAiEnglish').innerText = aiEn;
+                document.getElementById('callAiJapanese').innerText = aiJa;
+                document.getElementById('trySayingText').innerText = hintEn;
+                appendMessage('ai', `${aiEn}\n（${aiJa}）`, true);
+            } catch (e) {
+                appendMessage('ai', e.message, false);
+            }
+        }
+
+        // 会話終了時に「自動生成レッスンノート」を表示 (Screenshot 13 / 15風)
+        function finishRoleplayAndBuildNote() {
+            if (isChatRecording && chatRecognition) chatRecognition.stop();
+            if (roleplayTimerInterval) {
+                clearInterval(roleplayTimerInterval);
+                roleplayTimerInterval = null;
+            }
+            const item = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+            const noteCard = document.getElementById('lessonNoteCard');
+            noteCard.style.display = 'block';
+
+            document.getElementById('lessonNoteSummary').innerHTML = `
+                <div style="background:#ffffff; padding:12px 14px; border-radius:14px; border:1px solid #dbeafe; margin-top:6px;">
+                    <strong style="color:#16a34a;">👏 よかったところ：</strong> 自分の言葉で最後まで会話を続けられました！<br>
+                    <strong style="color:var(--primary-dark);">🎯 今日のターゲット表現：</strong> ${item.english}（${item.japanese}）
+                </div>
+            `;
+
+            const rephraseBox = document.getElementById('lessonNoteRephrases');
+            rephraseBox.innerHTML = '<div style="font-size:13px; font-weight:800; color:var(--text-main); margin-top:8px;">✨ あなたの発言 ➔ ネイティブならこう言う（1タップで保存可能）</div>';
+
+            const entries = userUtterancesLog.length > 0 ? userUtterancesLog : [{
+                user: item.english,
+                natural: item.english,
+                tip: item.japanese
+            }];
+
+            entries.forEach(ent => {
+                const uText = typeof ent === 'string' ? ent : ent.user;
+                const natText = typeof ent === 'string' ? item.english : ent.natural;
+                const tipText = typeof ent === 'string' ? '今日のキーフレーズとして保存できます' : ent.tip;
+                const div = document.createElement('div');
+                div.className = 'rephrase-item';
+                div.innerHTML = `
+                    <div class="rephrase-original">あなたの発言: "${uText}"</div>
+                    <div class="rephrase-natural">➔ ${natText}</div>
+                    <div style="font-size:12px; color:var(--text-sub); margin-top:4px;">💡 ${tipText}</div>
+                    <div style="display:flex; flex-wrap:wrap; gap:8px; margin-top:8px;">
+                        <button class="pill-nav-btn" onclick="speakArbitraryText('${natText.replace(/'/g, "\\'")}', 0.94)"><i class="fas fa-volume-up"></i> お手本</button>
+                        <button class="pill-nav-btn" onclick="speakArbitraryText('${natText.replace(/'/g, "\\'")}', 0.68)"><i class="fas fa-turtle"></i> ゆっくり</button>
+                        <button class="pill-nav-btn" style="background:var(--primary-soft); color:var(--primary);" onclick="quickSavePhrase('${natText.replace(/'/g, "\\'")}', '${tipText.replace(/'/g, "\\'")}', this)"><i class="fas fa-bookmark"></i> マイフレーズに保存</button>
+                    </div>
+                `;
+                rephraseBox.appendChild(div);
+            });
+
+            noteCard.scrollIntoView({ behavior: 'smooth' });
+        }
+
+        function quickSavePhrase(eng, jap, btnEl = null) {
+            const newItem = {
+                id: 'custom_' + Date.now(),
+                chapterIdx: currentChapterIdx,
+                sectionIdx: currentSectionIdx,
+                english: eng,
+                japanese: jap,
+                hint: 'ロールプレイのレッスンノートから保存',
+                notes: '',
+                isCustom: true
+            };
+            const customData = JSON.parse(localStorage.getItem('english_app_custom_sentences') || '[]');
+            customData.push(newItem);
+            localStorage.setItem('english_app_custom_sentences', JSON.stringify(customData));
+            grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items.push(newItem);
+            if (btnEl) {
+                btnEl.style.background = '#dcfce7';
+                btnEl.style.color = '#15803d';
+                btnEl.innerHTML = '<i class="fas fa-check"></i> 保存済み！';
+                btnEl.disabled = true;
+            }
+        }
+
+        function appendMessage(role, text, autoRead = false) {
+            const histEl = document.getElementById('chatHistory');
+            const msgDiv = document.createElement('div');
+            msgDiv.className = `chat-msg ${role}`;
+            msgDiv.innerHTML = text.replace(/\n/g, '<br>');
+            histEl.appendChild(msgDiv);
+            histEl.scrollTop = histEl.scrollHeight;
+            if (role === 'ai' && autoRead) playAIChatAudio(text);
+        }
+
+        // =====================================================================
+        // 7. 学習記録ダッシュボード ＆ 2人の掛け合い「復習ポッドキャスト」 (Page 5)
+        // =====================================================================
+        let isPodcastPlaying = false;
+
+        function markMissionCompleted(missionKey, xpAmount) {
+            const today = new Date().toISOString().slice(0, 10);
+            const stats = JSON.parse(localStorage.getItem('inko_learning_stats') || '{"xp":0,"streak":1,"days":{}}');
+            if (!stats.days[today]) stats.days[today] = {};
+            if (!stats.days[today][missionKey]) {
+                stats.days[today][missionKey] = true;
+                stats.xp = (stats.xp || 0) + xpAmount;
+                localStorage.setItem('inko_learning_stats', JSON.stringify(stats));
+            }
+            updateMissionsUI();
+        }
+
+        function updateMissionsUI() {
+            const today = new Date().toISOString().slice(0, 10);
+            const stats = JSON.parse(localStorage.getItem('inko_learning_stats') || '{"xp":0,"streak":1,"days":{}}');
+            const todayMissions = stats.days[today] || {};
+            let doneCount = 0;
+
+            ['drill', 'coach', 'roleplay'].forEach(k => {
+                const cap = k.charAt(0).toUpperCase() + k.slice(1);
+                const row = document.getElementById('mission' + cap + 'Row');
+                const st = document.getElementById('mission' + cap + 'Status');
+                if (todayMissions[k]) {
+                    doneCount++;
+                    if (row) row.classList.add('done');
+                    if (st) st.innerHTML = '<i class="fas fa-check-circle"></i> 達成！';
+                }
+            });
+            const badge = document.getElementById('missionCountBadge');
+            if (badge) badge.innerText = `${doneCount} / 3`;
+        }
+
+        function renderProgressDashboard() {
+            const stats = JSON.parse(localStorage.getItem('inko_learning_stats') || '{"xp":20,"streak":1,"days":{}}');
+            const progressData = getUserData();
+            const customData = JSON.parse(localStorage.getItem('english_app_custom_sentences') || '[]');
+
+            const learnedIds = Object.keys(progressData).filter(id => progressData[id]?.learned);
+            document.getElementById('statStreakNum').innerText = Math.max(1, Object.keys(stats.days || {}).length);
+            document.getElementById('statSavedCount').innerText = learnedIds.length + customData.length;
+            document.getElementById('statTotalXp').innerText = stats.xp || 20;
+
+            // ヒートマップ描画
+            const grid = document.getElementById('heatmapGrid');
+            grid.innerHTML = '';
+            for (let i = 0; i < 28; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'heat-cell ' + (i === 27 ? 'lv3' : (i % 5 === 0 ? 'lv2' : (i % 3 === 0 ? 'lv1' : '')));
+                grid.appendChild(cell);
+            }
+
+            // 2人の掛け合いポッドキャスト台本を生成
+            renderPodcastScript();
+
+            // 保存フレーズ一覧を描画
+            const listEl = document.getElementById('savedPhrasesList');
+            listEl.innerHTML = '';
+            const allSaved = [];
+
+            grammarData.chapters.forEach(c => {
+                c.sections.forEach(s => {
+                    s.items.forEach(itm => {
+                        if (progressData[itm.id]?.learned || itm.isCustom) {
+                            allSaved.push(itm);
+                        }
+                    });
+                });
+            });
+
+            cachedSavedPhrases = allSaved;
+
+            if (allSaved.length === 0) {
+                listEl.innerHTML = '<div style="font-size:13px; color:var(--text-muted); text-align:center; padding:14px;">ドリル画面で「フレーズを保存する」を押した例文や、ロールプレイのノートで保存した表現がここに並びます✨（右上の「🃏 フラッシュカード」を押すと今のセクションの例文で暗記テストもできます！）</div>';
+            } else {
+                allSaved.forEach(itm => {
+                    const card = document.createElement('div');
+                    card.style.cssText = 'padding:12px 14px; border:1px solid #e2e8f0; border-radius:14px; display:flex; justify-content:space-between; align-items:center; gap:10px; background:#f8fafc;';
+                    card.innerHTML = `
+                        <div>
+                            <div style="font-weight:800; font-size:15px; color:var(--text-main);">${itm.english}</div>
+                            <div style="font-size:12px; color:var(--text-sub);">${itm.japanese}</div>
+                        </div>
+                        <button class="icon-circle-btn" onclick="speakArbitraryText('${itm.english.replace(/'/g, "\\'")}')">
+                            <i class="fas fa-volume-up" style="color:var(--primary);"></i>
+                        </button>
+                    `;
+                    listEl.appendChild(card);
+                });
+            }
+
+            renderFlashcardUI();
+        }
+
+        let cachedSavedPhrases = [];
+        let currentSavedViewMode = 'list';
+        let flashcardSourceMode = 'auto'; // 'auto', 'chapter', 'saved'
+        let flashcardIndex = 0;
+        let isFlashcardRevealed = false;
+
+        function getChapterItemsDeck() {
+            const chap = grammarData.chapters[currentChapterIdx];
+            if (!chap || !chap.sections) return [];
+            const allChapItems = [];
+            chap.sections.forEach(s => {
+                if (s.items) {
+                    s.items.forEach(itm => allChapItems.push(itm));
+                }
+            });
+            return allChapItems;
+        }
+
+        function getActiveFlashcardSource() {
+            if (flashcardSourceMode === 'saved' && cachedSavedPhrases.length > 0) return 'saved';
+            if (flashcardSourceMode === 'chapter') return 'chapter';
+            // autoモード: 保存フレーズが2件以上あれば保存フレーズ、0〜1件ならすぐ何枚もめくれるよう現在のチャプター全体を出題
+            return cachedSavedPhrases.length >= 2 ? 'saved' : 'chapter';
+        }
+
+        function setFlashcardSource(src) {
+            flashcardSourceMode = src;
+            flashcardIndex = 0;
+            isFlashcardRevealed = false;
+            renderFlashcardUI();
+        }
+
+        function getFlashcardDeck() {
+            const activeSrc = getActiveFlashcardSource();
+            if (activeSrc === 'saved') return cachedSavedPhrases;
+            return getChapterItemsDeck();
+        }
+
+        function switchSavedPhrasesView(mode) {
+            currentSavedViewMode = mode;
+            const listEl = document.getElementById('savedPhrasesList');
+            const flashEl = document.getElementById('flashcardContainer');
+            const listBtn = document.getElementById('viewModeListBtn');
+            const flashBtn = document.getElementById('viewModeFlashBtn');
+
+            if (mode === 'flashcard') {
+                listEl.style.display = 'none';
+                flashEl.style.display = 'block';
+                listBtn.style.background = 'transparent';
+                listBtn.style.color = 'var(--text-sub)';
+                listBtn.style.boxShadow = 'none';
+                flashBtn.style.background = '#ffffff';
+                flashBtn.style.color = 'var(--primary-dark)';
+                flashBtn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
+                isFlashcardRevealed = false;
+                renderFlashcardUI();
+            } else {
+                listEl.style.display = 'flex';
+                flashEl.style.display = 'none';
+                flashBtn.style.background = 'transparent';
+                flashBtn.style.color = 'var(--text-sub)';
+                flashBtn.style.boxShadow = 'none';
+                listBtn.style.background = '#ffffff';
+                listBtn.style.color = 'var(--primary-dark)';
+                listBtn.style.boxShadow = '0 1px 4px rgba(0,0,0,0.08)';
+            }
+        }
+
+        function renderFlashcardUI() {
+            const container = document.getElementById('flashcardContainer');
+            if (!container) return;
+            const activeSrc = getActiveFlashcardSource();
+            const deck = getFlashcardDeck();
+            const chapDeckCount = getChapterItemsDeck().length;
+            const savedCount = cachedSavedPhrases.length;
+
+            if (deck.length === 0) {
+                container.innerHTML = '<div style="text-align:center; padding:16px; color:var(--text-muted);">出題できるフレーズがありません。</div>';
+                return;
+            }
+            if (flashcardIndex >= deck.length) flashcardIndex = 0;
+            const cardItem = deck[flashcardIndex];
+
+            container.innerHTML = `
+                <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:6px; font-size:12px; font-weight:800; color:var(--text-sub); margin-bottom:10px;">
+                    <div style="display:inline-flex; gap:6px;">
+                        <button type="button" onclick="setFlashcardSource('chapter')" style="border:1px solid ${activeSrc === 'chapter' ? 'var(--primary)' : '#cbd5e1'}; background:${activeSrc === 'chapter' ? 'var(--primary-soft)' : '#ffffff'}; color:${activeSrc === 'chapter' ? 'var(--primary-dark)' : 'var(--text-sub)'}; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:800; cursor:pointer;">
+                            📘 現在の章の全例文 (${chapDeckCount}枚)
+                        </button>
+                        <button type="button" onclick="setFlashcardSource('saved')" ${savedCount === 0 ? 'disabled' : ''} style="border:1px solid ${activeSrc === 'saved' ? 'var(--primary)' : '#cbd5e1'}; background:${activeSrc === 'saved' ? 'var(--primary-soft)' : '#ffffff'}; color:${activeSrc === 'saved' ? 'var(--primary-dark)' : 'var(--text-sub)'}; padding:4px 10px; border-radius:999px; font-size:11px; font-weight:800; cursor:${savedCount === 0 ? 'not-allowed' : 'pointer'}; opacity:${savedCount === 0 ? '0.5' : '1'};">
+                            ⭐ 保存フレーズ (${savedCount}枚)
+                        </button>
+                    </div>
+                    <span style="color:var(--primary-dark); background:#e0f2fe; padding:3px 10px; border-radius:999px;">カード ${flashcardIndex + 1} / ${deck.length}</span>
+                </div>
+                <div class="flashcard-stage" onclick="toggleFlashcardReveal()">
+                    <div style="font-size:11px; font-weight:800; color:var(--primary); margin-bottom:6px;">
+                        🇯🇵 日本語を見て英語で言ってみよう（タップで答えを表示）
+                    </div>
+                    <div style="font-size:17px; font-weight:800; color:var(--text-main); line-height:1.45;">
+                        ${cardItem.japanese}
+                    </div>
+                    ${cardItem.hint ? `<div style="font-size:12px; color:#d97706; font-weight:700; margin-top:6px;">💡 ヒント: ${cardItem.hint}</div>` : ''}
+                    ${isFlashcardRevealed ? `
+                        <div class="flashcard-answer-box">
+                            <div style="font-size:19px; font-weight:800; color:var(--primary-dark); margin-bottom:6px;">
+                                ${cardItem.english}
+                            </div>
+                            <button type="button" class="pill-nav-btn" onclick="event.stopPropagation(); speakArbitraryText('${cardItem.english.replace(/'/g, "\\'")}', 0.92)" style="background:var(--primary-soft); color:var(--primary);">
+                                <i class="fas fa-volume-up"></i> 発音を聞く
+                            </button>
+                        </div>
+                    ` : `
+                        <div style="margin-top:14px; font-size:12px; font-weight:800; color:var(--primary); background:rgba(37,137,245,0.1); padding:5px 14px; border-radius:999px;">
+                            👆 タップして英語の答えをめくる
+                        </div>
+                    `}
+                </div>
+                <div style="display:flex; justify-content:space-between; gap:10px; margin-top:10px;">
+                    <button type="button" class="pill-nav-btn" onclick="stepFlashcard(-1)" style="flex:1; justify-content:center;">
+                        <i class="fas fa-arrow-left"></i> 前のカード
+                    </button>
+                    <button type="button" class="pill-nav-btn" onclick="stepFlashcard(1)" style="flex:1; justify-content:center; background:var(--primary); color:#ffffff;">
+                        次のカード <i class="fas fa-arrow-right"></i>
+                    </button>
+                </div>
+            `;
+        }
+
+        function toggleFlashcardReveal() {
+            isFlashcardRevealed = !isFlashcardRevealed;
+            renderFlashcardUI();
+            if (isFlashcardRevealed) {
+                const deck = getFlashcardDeck();
+                const cardItem = deck[flashcardIndex];
+                if (cardItem) speakArbitraryText(cardItem.english, 0.92);
+            }
+        }
+
+        function stepFlashcard(delta) {
+            const deck = getFlashcardDeck();
+            if (deck.length === 0) return;
+            flashcardIndex = (flashcardIndex + delta + deck.length) % deck.length;
+            isFlashcardRevealed = false;
+            renderFlashcardUI();
+        }
+
+        function getPodcastLines() {
+            const item = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+            const secTitle = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].title;
+            return [
+                { speaker: 'Mia 👩', gender: 'female', lang: 'en-US', pitch: 1.18, text: `Hey Ken! Today let's review a super useful expression from "${secTitle}".` },
+                { speaker: 'Ken 👨', gender: 'male', lang: 'en-US', pitch: 0.82, text: `Sounds great, Mia! The key phrase is: "${item.english}".` },
+                { speaker: 'Mia 👩', gender: 'female', lang: 'en-US', pitch: 1.18, text: `Yes! Native speakers use "${item.english}" all the time in daily conversation.` },
+                { speaker: 'Ken 👨', gender: 'male', lang: 'en-US', pitch: 0.82, text: `Let's say it one more time together: "${item.english}". Great job today, Yuichi!` }
+            ];
+        }
+
+        function renderPodcastScript() {
+            const box = document.getElementById('podcastTranscriptBox');
+            const lines = getPodcastLines();
+            box.innerHTML = '';
+            lines.forEach((l, idx) => {
+                const div = document.createElement('div');
+                div.className = 'podcast-line';
+                div.id = 'podLine_' + idx;
+                div.innerHTML = `<div style="font-size:11px; font-weight:800; color:var(--primary);">${l.speaker}</div><div style="font-size:14px; font-weight:700; color:var(--text-main);">${l.text}</div>`;
+                box.appendChild(div);
+            });
+        }
+
+        function applyPodcastHostVoice(utterance, gender) {
+            if (availableVoices.length === 0 && 'speechSynthesis' in window) {
+                availableVoices = window.speechSynthesis.getVoices();
+            }
+            const enVoices = availableVoices.filter(v => v.lang.startsWith('en'));
+            if (enVoices.length === 0) return;
+
+            const femaleKeywords = ['Zira', 'Aria', 'Jenny', 'Samantha', 'Victoria', 'Karen', 'Moira', 'Tessa', 'Female', 'Google US English'];
+            const maleKeywords = ['David', 'Mark', 'Guy', 'Christopher', 'Eric', 'Roger', 'Steffan', 'Daniel', 'Alex', 'Male'];
+
+            if (gender === 'female') {
+                const fVoice = enVoices.find(v => femaleKeywords.some(k => v.name.includes(k)));
+                if (fVoice) {
+                    utterance.voice = fVoice;
+                    return;
+                }
+            } else {
+                const mVoice = enVoices.find(v => maleKeywords.some(k => v.name.includes(k)));
+                if (mVoice) {
+                    utterance.voice = mVoice;
+                    return;
+                }
+            }
+            applySelectedVoice(utterance);
+        }
+
+        function togglePodcastPlayback() {
+            if (!('speechSynthesis' in window)) return;
+            const btn = document.getElementById('podcastPlayBtn');
+            if (isPodcastPlaying) {
+                window.speechSynthesis.cancel();
+                isPodcastPlaying = false;
+                btn.innerHTML = '<i class="fas fa-play"></i> 再生する';
+                document.querySelectorAll('.podcast-line').forEach(el => el.classList.remove('active-line'));
+                return;
+            }
+
+            isPodcastPlaying = true;
+            btn.innerHTML = '<i class="fas fa-stop"></i> 停止する';
+            const lines = getPodcastLines();
+            const speedSel = document.getElementById('podcastSpeedSelect');
+            const baseRate = speedSel ? parseFloat(speedSel.value) : 0.95;
+            let idx = 0;
+
+            function speakNextLine() {
+                if (!isPodcastPlaying || idx >= lines.length) {
+                    isPodcastPlaying = false;
+                    btn.innerHTML = '<i class="fas fa-play"></i> 再生する';
+                    document.querySelectorAll('.podcast-line').forEach(el => el.classList.remove('active-line'));
+                    return;
+                }
+                document.querySelectorAll('.podcast-line').forEach(el => el.classList.remove('active-line'));
+                const activeEl = document.getElementById('podLine_' + idx);
+                if (activeEl) activeEl.classList.add('active-line');
+
+                const line = lines[idx];
+                const utt = new SpeechSynthesisUtterance(line.text);
+                utt.lang = 'en-US';
+                utt.rate = line.gender === 'female' ? baseRate * 1.02 : baseRate * 0.96;
+                utt.pitch = line.pitch;
+                applyPodcastHostVoice(utt, line.gender);
+                utt.onend = () => {
+                    idx++;
+                    setTimeout(speakNextLine, 350);
+                };
+                window.speechSynthesis.speak(utt);
+            }
+            window.speechSynthesis.cancel();
+            speakNextLine();
+        }
+
+        // =====================================================================
+        // 8. 音声合成・目次・ブックマーク・設定・自作例文 (既存機能の完全継承)
+        // =====================================================================
+        let availableVoices = [];
+        if ('speechSynthesis' in window) {
+            window.speechSynthesis.onvoiceschanged = () => {
+                availableVoices = window.speechSynthesis.getVoices();
+            };
+        }
+
+        function applySelectedVoice(utterance) {
+            if (availableVoices.length === 0 && 'speechSynthesis' in window) {
+                availableVoices = window.speechSynthesis.getVoices();
+            }
+            const enVoices = availableVoices.filter(v => v.lang.startsWith('en'));
+            const pref = localStorage.getItem('preferred_voice');
+            let target = pref ? enVoices.find(v => v.name === pref) : null;
+            if (!target) {
+                target = enVoices.find(v => v.name.includes('Google US English'))
+                      || enVoices.find(v => v.name.includes('Natural'))
+                      || enVoices.find(v => v.lang === 'en-US')
+                      || enVoices[0];
+            }
+            if (target) utterance.voice = target;
+        }
+
+        function playAudio(rate = 0.92) {
+            const textToSpeak = document.getElementById('englishText').innerText;
+            speakArbitraryText(textToSpeak, rate);
+        }
+
+        function speakArbitraryText(text, rate = 0.92) {
+            if (!('speechSynthesis' in window)) return;
+            window.speechSynthesis.cancel();
+            const blob = document.getElementById('activeInkoBlob');
+            if (blob) blob.classList.add('speaking');
+            setTimeout(() => {
+                const utterance = new SpeechSynthesisUtterance(text);
+                utterance.lang = 'en-US';
+                utterance.rate = rate;
+                applySelectedVoice(utterance);
+                utterance.onend = () => {
+                    if (blob) blob.classList.remove('speaking');
+                };
+                window.speechSynthesis.speak(utterance);
+            }, 40);
+        }
+
+        function playAIChatAudio(text) {
+            let engPart = text
+                .replace(/（[^）]*）/g, '')
+                .replace(/\([^)]*[ぁ-んァ-ン一-龯][^)]*\)/g, '')
+                .replace(/[ぁ-んァ-ン一-龯〜。、！？「」【】『』・…]/g, '')
+                .trim();
+            if (engPart.length < 3) engPart = text;
+            speakArbitraryText(engPart, 0.94);
+        }
+
+        function toggleMenu() {
+            document.getElementById('tocMenu').classList.toggle('active');
+        }
+
+        function buildTocMenu() {
+            const menu = document.getElementById('tocMenu');
+            if (!menu || typeof grammarData === 'undefined') return;
+            menu.innerHTML = '';
+
+            grammarData.chapters.forEach((chapter, cIdx) => {
+                const chapDiv = document.createElement('div');
+                chapDiv.className = 'toc-chapter';
+                chapDiv.innerText = chapter.title;
+                menu.appendChild(chapDiv);
+
+                chapter.sections.forEach((section, sIdx) => {
+                    const secDiv = document.createElement('div');
+                    secDiv.className = 'toc-section' + (cIdx === currentChapterIdx && sIdx === currentSectionIdx ? ' current' : '');
+                    const isLocked = !isPremium && cIdx >= FREE_CHAPTER_LIMIT;
+                    if (isLocked) {
+                        secDiv.innerHTML = `<span>🔒 ${section.title}</span>`;
+                        secDiv.onclick = () => {
+                            alert('ここから先はプレミアム版で学習できます。右上の設定ボタンからパスワードを入力してください。');
+                            toggleMenu();
+                        };
+                    } else {
+                        secDiv.innerHTML = `<span>${section.title}</span><span style="font-size:11px; color:var(--text-muted);">${section.items.length}文</span>`;
+                        secDiv.onclick = () => {
+                            currentChapterIdx = cIdx;
+                            currentSectionIdx = sIdx;
+                            currentItemIdx = 0;
+                            renderApp();
+                            toggleMenu();
+                        };
+                    }
+                    menu.appendChild(secDiv);
+                });
+            });
+        }
+
+        function getUserData() {
+            return JSON.parse(localStorage.getItem('english_app_progress') || '{}');
+        }
+        function saveUserData(data) {
+            localStorage.setItem('english_app_progress', JSON.stringify(data));
+        }
+        function loadUserProgress(itemId) {
+            const data = getUserData();
+            const itemData = data[itemId] || {};
+            const btn = document.getElementById('bookmarkBtn');
+            if (btn) {
+                if (itemData.learned) {
+                    btn.style.background = '#dcfce7';
+                    btn.style.color = '#15803d';
+                    btn.style.borderColor = '#86efac';
+                    btn.innerHTML = '<i class="fas fa-bookmark"></i> 保存済みフレーズ';
+                } else {
+                    btn.style.background = '#ffffff';
+                    btn.style.color = 'var(--text-main)';
+                    btn.style.borderColor = '#cbd5e1';
+                    btn.innerHTML = '<i class="far fa-bookmark"></i> フレーズを保存する';
+                }
+            }
+            const noteInput = document.getElementById('userNoteInput');
+            if (noteInput) noteInput.value = itemData.note || '';
+        }
+
+        function toggleBookmark() {
+            const item = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+            const data = getUserData();
+            if (!data[item.id]) data[item.id] = {};
+            data[item.id].learned = !data[item.id].learned;
+            saveUserData(data);
+            loadUserProgress(item.id);
+        }
+
+        function saveUserNote() {
+            const item = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+            const noteText = document.getElementById('userNoteInput').value;
+            const data = getUserData();
+            if (!data[item.id]) data[item.id] = {};
+            data[item.id].note = noteText;
+            saveUserData(data);
+            const msg = document.getElementById('noteSaveMsg');
+            msg.style.display = 'block';
+            setTimeout(() => { msg.style.display = 'none'; }, 2000);
+        }
+
+        // 自作例文ロジック
+        let currentEditingCustomId = null;
+        function loadCustomSentences() {
+            if (typeof grammarData === 'undefined') return;
+            const customData = JSON.parse(localStorage.getItem('english_app_custom_sentences') || '[]');
+            customData.forEach(customItem => {
+                const chapter = grammarData.chapters[customItem.chapterIdx];
+                if (chapter && chapter.sections[customItem.sectionIdx]) {
+                    const sec = chapter.sections[customItem.sectionIdx];
+                    if (!sec.items.find(i => i.id === customItem.id)) {
+                        sec.items.push(customItem);
+                    }
+                }
+            });
+        }
+        function openAddSentenceModal() {
+            currentEditingCustomId = null;
+            document.getElementById('customEnglishInput').value = '';
+            document.getElementById('customJapaneseInput').value = '';
+            document.getElementById('customHintInput').value = '';
+            document.getElementById('customNotesInput').value = '';
+            document.getElementById('addSentenceModal').style.display = 'flex';
+        }
+        function closeAddSentenceModal() {
+            document.getElementById('addSentenceModal').style.display = 'none';
+        }
+        function editCustomSentence() {
+            const item = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+            currentEditingCustomId = item.id;
+            document.getElementById('customEnglishInput').value = item.english || '';
+            document.getElementById('customJapaneseInput').value = item.japanese || '';
+            document.getElementById('customHintInput').value = item.hint || '';
+            document.getElementById('customNotesInput').value = item.notes || '';
+            document.getElementById('addSentenceModal').style.display = 'flex';
+        }
+        function deleteCustomSentence() {
+            const item = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].items[currentItemIdx];
+            if (!confirm("この自作例文を削除しますか？")) return;
+            const section = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx];
+            section.items = section.items.filter(i => i.id !== item.id);
+            let customData = JSON.parse(localStorage.getItem('english_app_custom_sentences') || '[]');
+            customData = customData.filter(i => i.id !== item.id);
+            localStorage.setItem('english_app_custom_sentences', JSON.stringify(customData));
+            currentItemIdx = Math.max(0, section.items.length - 1);
+            renderApp();
+        }
+        function saveCustomSentence() {
+            const eng = document.getElementById('customEnglishInput').value.trim();
+            const jap = document.getElementById('customJapaneseInput').value.trim();
+            const hint = document.getElementById('customHintInput').value.trim();
+            const notes = document.getElementById('customNotesInput').value.trim();
+            if (!eng || !jap) { alert("英文と日本語訳は必須です。"); return; }
+
+            const customData = JSON.parse(localStorage.getItem('english_app_custom_sentences') || '[]');
+            const section = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx];
+
+            if (currentEditingCustomId) {
+                const idx = customData.findIndex(i => i.id === currentEditingCustomId);
+                if (idx !== -1) Object.assign(customData[idx], { english: eng, japanese: jap, hint, notes });
+                localStorage.setItem('english_app_custom_sentences', JSON.stringify(customData));
+                const itm = section.items.find(i => i.id === currentEditingCustomId);
+                if (itm) Object.assign(itm, { english: eng, japanese: jap, hint, notes });
+            } else {
+                const newItem = { id: 'custom_' + Date.now(), chapterIdx: currentChapterIdx, sectionIdx: currentSectionIdx, english: eng, japanese: jap, hint, notes, isCustom: true };
+                customData.push(newItem);
+                localStorage.setItem('english_app_custom_sentences', JSON.stringify(customData));
+                section.items.push(newItem);
+                currentItemIdx = section.items.length - 1;
+            }
+            closeAddSentenceModal();
+            renderApp();
+        }
+
+        // 設定モーダル
+        function openSettings() {
+            document.getElementById('apiKeyInput').value = localStorage.getItem('gemini_api_key') || '';
+            document.getElementById('gptsUrlInput').value = localStorage.getItem('gpts_url') || '';
+            document.getElementById('silenceLimitSelect').value = localStorage.getItem('speech_silence_limit') || '4';
+
+            const select = document.getElementById('voiceSelect');
+            select.innerHTML = '<option value="">自動選択 (おすすめの高音質)</option>';
+            if (availableVoices.length === 0 && 'speechSynthesis' in window) {
+                availableVoices = window.speechSynthesis.getVoices();
+            }
+            availableVoices.filter(v => v.lang.startsWith('en')).forEach(v => {
+                const opt = document.createElement('option');
+                opt.value = v.name;
+                opt.textContent = v.name;
+                select.appendChild(opt);
+            });
+            select.value = localStorage.getItem('preferred_voice') || '';
+            document.getElementById('premiumLockSection').style.display = isPremium ? 'none' : 'block';
+            document.getElementById('settingsModal').style.display = 'flex';
+        }
+        function closeSettings() {
+            document.getElementById('settingsModal').style.display = 'none';
+        }
+        function saveSettings() {
+            const key = document.getElementById('apiKeyInput').value.trim();
+            if (key) localStorage.setItem('gemini_api_key', key);
+            else localStorage.removeItem('gemini_api_key');
+
+            const gptsUrl = document.getElementById('gptsUrlInput').value.trim();
+            if (gptsUrl) localStorage.setItem('gpts_url', gptsUrl);
+            else localStorage.removeItem('gpts_url');
+
+            localStorage.setItem('speech_silence_limit', document.getElementById('silenceLimitSelect').value);
+            const voice = document.getElementById('voiceSelect').value;
+            if (voice) localStorage.setItem('preferred_voice', voice);
+            else localStorage.removeItem('preferred_voice');
+
+            closeSettings();
+        }
+        function checkPremiumPassword() {
+            const pwd = document.getElementById('premiumPasswordInput').value.trim();
+            if (pwd === 'GRAMMAR-PRO-2026') {
+                localStorage.setItem('english_app_premium', 'true');
+                isPremium = true;
+                alert('プレミアム版のロックが解除されました！🎉');
+                document.getElementById('premiumLockSection').style.display = 'none';
+                renderApp();
+            } else {
+                alert('パスワードが正しくありません。');
+            }
+        }
+        function openChatGPTWithContext() {
+            const targetText = document.getElementById('englishText').innerText;
+            const sectionTitle = grammarData.chapters[currentChapterIdx].sections[currentSectionIdx].title;
+            const gptsUrl = localStorage.getItem('gpts_url') || "https://chatgpt.com/";
+            const promptText = `Let's practice English roleplay using "${targetText}" (${sectionTitle}). Please ask me a short question in English and gently help in Japanese if needed!`;
+            window.open(`${gptsUrl}${gptsUrl.includes('?') ? '&' : '?'}q=${encodeURIComponent(promptText)}`, '_blank');
+        }
+
+        // アプリ初期化
+        window.addEventListener('DOMContentLoaded', () => {
+            loadCustomSentences();
+            renderHomeMascot();
+            initSpeechRecognition();
+            renderApp();
+        });
+    </script>
+</body>
+</html>

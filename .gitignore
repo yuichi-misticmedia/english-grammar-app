@@ -1,0 +1,15 @@
+# 重い元画像・スキャンデータ・機密ファイルはGitHubにアップロードしない
+EnglishBook Scand images/
+EnglishBook JSON Files/
+Mascot characters/
+Premium Sales Page Draft/
+Premium Version Unlock Key.*
+Sample text for posting on X.odt
+index_backup_before_inko_upgrade.html
+stitch_design_*
+Grammar Master App*
+generator.html
+.agent/
+*.psd
+*.odt
+*.pdf
